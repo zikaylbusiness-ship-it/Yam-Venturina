@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "Outfit", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
@@ -9,15 +11,23 @@
 
 @layer base {
   body {
-    @apply font-sans antialiased text-neutral-900 bg-[#F5F5F7] selection:bg-black selection:text-white;
+    @apply font-sans antialiased text-neutral-900 bg-[#f2f2f7] dark:bg-[#121212] dark:text-white selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black;
   }
 }
 
 .glass-pill {
-  @apply bg-white border border-black/5 shadow-sm rounded-full;
+  @apply bg-white/70 backdrop-blur-xl border border-white/50 shadow-sm rounded-full dark:bg-white/10 dark:border-white/10 dark:text-neutral-200;
 }
 
 .glass-card {
-  @apply bg-white border border-black/5 shadow-[0_8px_32px_rgba(0,0,0,0.04)] rounded-[32px];
+  @apply bg-white/60 backdrop-blur-2xl border border-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.06)] rounded-[32px] dark:bg-[#1C1C1E]/60 dark:border-white/10 dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)];
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 

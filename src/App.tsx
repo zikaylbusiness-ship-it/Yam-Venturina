@@ -29,7 +29,10 @@ import {
   X,
   Utensils,
   Leaf,
-  Trash2
+  Trash2,
+  MessageSquare,
+  Moon,
+  Sun
 } from 'lucide-react';
 
 import gcashQr from './assets/gcash.png';
@@ -239,6 +242,13 @@ const PAYMENT_METHODS = {
 export default function App() {
   const [activeTab, setActiveTab] = useState('food');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFranchise, setSelectedFranchise] = useState<string | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    setSelectedFranchise(null);
+  }, [activeTab]);
+
   const [cart, setCart] = useState<{ [key: string]: CartItem }>(() => {
     const saved = localStorage.getItem('yam_cart_v3');
     return saved ? JSON.parse(saved) : {};
@@ -248,21 +258,63 @@ export default function App() {
   const [selectedQR, setSelectedQR] = useState<{ method: string, qr: string } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
+  const [allProvinces, setAllProvinces] = useState<{code: string, name: string, islandGroupCode: string}[]>([]);
+  const [provinces, setProvinces] = useState<{code: string, name: string}[]>([]);
+  const [cities, setCities] = useState<{code: string, name: string}[]>([]);
+
   const [formData, setFormData] = useState({
     fullName: '',
     mobile: '',
     fbName: '',
     email: '',
     address: {
-      street: '',
-      city: '',
+      region: 'Luzon', // 'Luzon' | 'Visayas' | 'Mindanao'
+      provinceCode: '',
       province: '',
+      cityCode: '',
+      city: '',
+      street: '',
       zip: ''
     },
     notes: '',
-    deliveryOption: 'Luzon',
+    deliveryOption: 'Luzon', // 'Luzon' / 'Visayas' / 'Mindanao' or 'Pickup'
     paymentMethod: 'GCash'
   });
+
+  useEffect(() => {
+    fetch('https://psgc.gitlab.io/api/provinces/')
+      .then(r => r.json())
+      .then(data => {
+        const withNCR = [
+          ...data,
+          { code: '130000000', name: 'Metro Manila', islandGroupCode: 'luzon' }
+        ].sort((a: any, b: any) => a.name.localeCompare(b.name));
+        setAllProvinces(withNCR);
+      })
+      .catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    if (formData.address.region && allProvinces.length > 0) {
+      const regionFilter = formData.address.region.toLowerCase();
+      setProvinces(allProvinces.filter(p => p.islandGroupCode === regionFilter));
+    }
+  }, [formData.address.region, allProvinces]);
+
+  useEffect(() => {
+    if (formData.address.provinceCode) {
+      const url = formData.address.provinceCode === '130000000'
+        ? `https://psgc.gitlab.io/api/regions/130000000/cities-municipalities/`
+        : `https://psgc.gitlab.io/api/provinces/${formData.address.provinceCode}/cities-municipalities/`;
+        
+      fetch(url)
+        .then(r => r.json())
+        .then(data => setCities(data.sort((a: any, b: any) => a.name.localeCompare(b.name))))
+        .catch(console.error);
+    } else {
+      setCities([]);
+    }
+  }, [formData.address.provinceCode]);
 
   // Theme Config
   const theme = useMemo(() => {
@@ -295,12 +347,18 @@ export default function App() {
   // Conditional Pickup Logic
   const canPickup = subtotal >= 800;
   
+  useEffect(() => {
+    if (!canPickup && formData.deliveryOption === 'Pickup') {
+      setFormData(prev => ({ ...prev, deliveryOption: prev.address.region }));
+    }
+  }, [canPickup, formData.deliveryOption]);
+
   const deliveryFee = useMemo(() => {
     if (formData.deliveryOption === 'Pickup') {
-      return canPickup ? 0 : 150;
+      return 0;
     }
     return (DELIVERY_FEES as any)[formData.deliveryOption] || 150;
-  }, [subtotal, canPickup, formData.deliveryOption]);
+  }, [formData.deliveryOption]);
 
   const total = subtotal + deliveryFee;
 
@@ -309,6 +367,7 @@ export default function App() {
     const result: { [key: string]: Product[] } = {};
     
     Object.entries(data.franchises).forEach(([franchise, items]) => {
+      if (selectedFranchise && selectedFranchise !== franchise) return;
       const matchedItems = items.filter(item => 
         item.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
@@ -318,7 +377,7 @@ export default function App() {
     });
     
     return result;
-  }, [activeTab, searchQuery]);
+  }, [activeTab, searchQuery, selectedFranchise]);
 
   const addToCart = (item: Product) => {
     setCart(prev => {
@@ -370,10 +429,18 @@ export default function App() {
     text += `*CUSTOMER DETAILS*\n`;
     text += `Name: ${formData.fullName}\n`;
     text += `Mobile: ${formData.mobile}\n`;
-    text += `Messenger: ${formData.fbName}\n`;
-    text += `Address: ${formData.address.street}, ${formData.address.city}, ${formData.address.province} ${formData.address.zip}\n`;
-    text += `Method: ${formData.paymentMethod}\n`;
-    text += `Option: ${formData.deliveryOption === 'Pickup' ? 'Pickup (Paragon Plaza)' : formData.deliveryOption}\n`;
+    if (formData.fbName) text += `Messenger: ${formData.fbName}\n`;
+    if (formData.email) text += `Email: ${formData.email}\n`;
+    
+    if (formData.deliveryOption === 'Pickup') {
+      text += `Method: Pickup\n`;
+      text += `Location: Paragon Plaza Condominium (Lobby Area)\n`;
+    } else {
+      text += `Method: Delivery (${formData.address.region})\n`;
+      text += `Address: ${formData.address.street}, ${formData.address.city}, ${formData.address.province} ${formData.address.zip}\n`;
+    }
+
+    text += `Payment: ${formData.paymentMethod}\n`;
     if (formData.notes) text += `Notes: ${formData.notes}\n`;
     return text;
   };
@@ -402,9 +469,14 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F2F2F7] text-neutral-900 font-sans">
+    <div className={`min-h-screen font-sans relative overflow-hidden transition-colors ${isDarkMode ? 'dark bg-[#121212] text-white' : 'bg-[#f2f2f7] text-neutral-900'}`}>
+      {/* Background Blobs for Glass Effect */}
+      <div className="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-emerald-200/50 blur-[100px] pointer-events-none -z-10" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-red-200/40 blur-[120px] pointer-events-none -z-10" />
+      <div className="fixed top-[40%] left-[20%] w-[30vw] h-[30vw] rounded-full bg-blue-100/40 blur-[80px] pointer-events-none -z-10" />
+
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/40 backdrop-blur-3xl border-b border-white/10 px-6 py-5">
+      <header className={`sticky top-0 z-40 backdrop-blur-3xl border-b px-6 py-5 shadow-[0_4px_30px_rgba(0,0,0,0.03)] transition-colors ${isDarkMode ? 'bg-[#1C1C1E]/80 border-white/10' : 'bg-white/50 border-white/40'}`}>
         <div className="max-w-md mx-auto space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -415,32 +487,67 @@ export default function App() {
                   <Leaf className="w-6 h-6 text-white" />
                 )}
               </div>
-              <h1 className="text-xl font-bold tracking-tight text-neutral-900">Yam Venturina</h1>
+              <h1 className={`text-xl font-bold tracking-tight transition-colors ${isDarkMode ? 'text-white' : 'text-neutral-900'}`}>Yam Venturina</h1>
             </div>
-            <div className="flex glass-pill p-1 rounded-xl">
-              <button 
-                onClick={() => setActiveTab('food')}
-                className={`px-5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'food' ? 'bg-white text-red-600 shadow-sm' : 'text-neutral-400'}`}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className={`p-2 rounded-xl transition-all ${isDarkMode ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-white/60 text-neutral-600 hover:bg-white shadow-sm'}`}
               >
-                Food
+                {isDarkMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
               </button>
-              <button 
-                onClick={() => setActiveTab('health')}
-                className={`px-5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'health' ? 'bg-white text-emerald-600 shadow-sm' : 'text-neutral-400'}`}
-              >
-                Health & Wellness
-              </button>
+              <div className={`flex p-1 rounded-xl transition-colors ${isDarkMode ? 'bg-white/10 border border-white/5' : 'glass-pill'}`}>
+                <button 
+                  onClick={() => setActiveTab('food')}
+                  className={`px-5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'food' ? (isDarkMode ? 'bg-[#2C2C2E] text-red-500 shadow-sm' : 'bg-white text-red-600 shadow-sm') : (isDarkMode ? 'text-neutral-400' : 'text-neutral-400')}`}
+                >
+                  Food
+                </button>
+                <button 
+                  onClick={() => setActiveTab('health')}
+                  className={`px-5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'health' ? (isDarkMode ? 'bg-[#2C2C2E] text-emerald-400 shadow-sm' : 'bg-white text-emerald-600 shadow-sm') : (isDarkMode ? 'text-neutral-400' : 'text-neutral-400')}`}
+                >
+                  Health & Wellness
+                </button>
+              </div>
             </div>
           </div>
           <div className="relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300 group-focus-within:text-neutral-900 transition-colors" />
+            <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${isDarkMode ? 'text-neutral-500 group-focus-within:text-white' : 'text-neutral-400 group-focus-within:text-neutral-900'}`} />
             <input 
               type="text" 
               placeholder="Search items..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full glass-pill py-3.5 pl-12 pr-4 text-sm font-medium focus:outline-none transition-all placeholder:text-neutral-300"
+              className={`w-full backdrop-blur-md shadow-sm rounded-full py-3.5 pl-12 pr-4 text-sm font-medium focus:outline-none transition-all ${isDarkMode ? 'bg-white/5 border border-white/10 text-white placeholder:text-neutral-500 focus:bg-white/10' : 'bg-white/40 border border-white/60 focus:bg-white/70 placeholder:text-neutral-400'}`}
             />
+          </div>
+          
+          {/* Franchise Filters */}
+          <div className="flex overflow-x-auto gap-2 pb-2 -mx-6 px-6 no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <button
+              onClick={() => setSelectedFranchise(null)}
+              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${
+                !selectedFranchise 
+                  ? `${theme.brand} text-white shadow-md` 
+                  : isDarkMode ? 'bg-white/5 text-neutral-400 hover:bg-white/10 border border-white/10' : 'bg-white/40 text-neutral-500 hover:bg-white/60 border border-white/60'
+              }`}
+            >
+              All
+            </button>
+            {Object.keys(CATALOG[activeTab].franchises).map(franchise => (
+              <button
+                key={franchise}
+                onClick={() => setSelectedFranchise(franchise)}
+                className={`flex-shrink-0 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${
+                  selectedFranchise === franchise 
+                    ? `${theme.brand} text-white shadow-md` 
+                    : isDarkMode ? 'bg-white/5 text-neutral-400 hover:bg-white/10 border border-white/10' : 'bg-white/40 text-neutral-500 hover:bg-white/60 border border-white/60'
+                }`}
+              >
+                {franchise}
+              </button>
+            ))}
           </div>
         </div>
       </header>
@@ -459,10 +566,13 @@ export default function App() {
               <div className="grid grid-cols-1 gap-5">
                 {items.map((item) => (
                   <motion.div 
+                    layout
                     key={item.name}
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="glass-card p-6 flex items-center gap-5"
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                    className="glass-card p-6 flex items-center gap-5 relative overflow-hidden group"
                   >
                     <div className="flex-1 min-w-0">
                       <div className="mb-2">
@@ -470,25 +580,23 @@ export default function App() {
                           {franchise.split(' ')[0]}
                         </span>
                       </div>
-                      <h3 className="font-bold text-sm leading-tight text-neutral-800">{item.name}</h3>
-                      <p className="text-[11px] text-neutral-400 font-semibold mt-1 uppercase tracking-tighter opacity-60">{item.pack}</p>
+                      <h3 className="font-bold text-sm leading-tight text-neutral-800 dark:text-neutral-100">{item.name}</h3>
+                      <p className="text-[11px] text-neutral-400 dark:text-neutral-500 font-semibold mt-1 uppercase tracking-tighter opacity-60 dark:opacity-80">{item.pack}</p>
                     </div>
 
-                    <div className="flex flex-col items-center justify-center px-5 min-w-[100px]">
-                      <div className={`bg-white px-3 py-2 rounded-xl border border-black/5 shadow-sm`}>
-                        <div className={`font-mono font-black text-lg tabular-nums whitespace-nowrap flex items-center gap-0.5 ${theme.text}`}>
-                          <span className="text-[12px] opacity-40 font-sans font-semibold">₱</span>
-                          {item.price.toLocaleString(undefined, { minimumFractionDigits: 0 })}
-                        </div>
+                    <div className="flex flex-col items-start justify-center pl-2 pr-4 min-w-[90px]">
+                      <div className={`font-mono font-black text-lg tabular-nums whitespace-nowrap flex items-center gap-1 ${theme.text}`}>
+                        <span className="text-[12px] opacity-40 font-sans font-semibold">₱</span>
+                        {item.price.toLocaleString(undefined, { minimumFractionDigits: 0 })}
                       </div>
                     </div>
 
                     <div className="flex-shrink-0">
                       {cart[item.name] ? (
-                        <div className="flex flex-col items-center gap-1.5 bg-neutral-100/50 p-1.5 rounded-2xl border border-white">
+                        <div className="flex flex-col items-center gap-1.5 bg-neutral-100/50 dark:bg-white/5 p-1.5 rounded-2xl border border-white dark:border-white/10">
                           <button onClick={() => updateQuantity(item.name, 1)} className={`w-8 h-8 rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-transform ${theme.brand}`}><Plus className="w-3.5 h-3.5 text-white" /></button>
-                          <span className="h-5 flex items-center font-mono font-bold text-xs text-neutral-800">{cart[item.name].quantity}</span>
-                          <button onClick={() => updateQuantity(item.name, -1)} className="w-8 h-8 rounded-xl flex items-center justify-center bg-white shadow-sm active:scale-90 transition-transform"><Minus className={`w-3.5 h-3.5 ${theme.text}`} /></button>
+                          <span className="h-5 flex items-center font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">{cart[item.name].quantity}</span>
+                          <button onClick={() => updateQuantity(item.name, -1)} className="w-8 h-8 rounded-xl flex items-center justify-center bg-white dark:bg-[#2C2C2E] shadow-sm active:scale-90 transition-transform"><Minus className={`w-3.5 h-3.5 ${theme.text}`} /></button>
                         </div>
                       ) : (
                         <motion.button 
@@ -509,17 +617,20 @@ export default function App() {
       </main>
 
       {/* Floating Action Button */}
-      <AnimatePresence>
+              <AnimatePresence>
         {totalItems > 0 && !isCheckoutOpen && !isSuccess && (
           <motion.div 
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-md px-6 z-50"
+            initial={{ y: 100, opacity: 0, scale: 0.9 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 100, opacity: 0, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-md px-6 z-50"
           >
-            <button 
+            <motion.button 
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => setIsCheckoutOpen(true)}
-              className="w-full bg-black/80 backdrop-blur-3xl text-white rounded-[40px] p-6 shadow-2xl flex items-center justify-between active:scale-[0.97] transition-all border border-white/10"
+              className="w-full bg-[#111111]/80 backdrop-blur-3xl text-white rounded-[40px] p-5 shadow-[0_10px_40px_rgba(0,0,0,0.2)] flex items-center justify-between transition-all border border-white/20"
             >
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/10">
@@ -534,7 +645,7 @@ export default function App() {
                 <span className="text-[10px] font-bold uppercase tracking-widest bg-white/10 px-4 py-1.5 rounded-xl border border-white/5">{totalItems} Products</span>
                 <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:translate-x-1 transition-transform"><ChevronRight className="w-5 h-5 opacity-40" /></div>
               </div>
-            </button>
+            </motion.button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -546,18 +657,18 @@ export default function App() {
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setIsCheckoutOpen(false)}
-              className="absolute inset-0 bg-neutral-900/40 backdrop-blur-sm px-4"
+              className="absolute inset-0 bg-black/40 backdrop-blur-md px-4"
             />
             <motion.div 
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 32, stiffness: 250 }}
-              className="relative w-full max-w-md bg-white/70 backdrop-blur-3xl h-[92vh] rounded-t-[56px] overflow-hidden flex flex-col shadow-2xl border-t border-white"
+              className="relative w-full max-w-md bg-[#1C1C1E]/80 backdrop-blur-3xl h-[92vh] rounded-t-[56px] overflow-hidden flex flex-col shadow-[0_-10px_40px_rgba(0,0,0,0.5)] border-t border-white/20 text-white"
             >
-              <div className="w-16 h-1.5 bg-neutral-200/50 rounded-full mx-auto mt-4 mb-4" />
+              <div className="w-16 h-1.5 bg-white/20 rounded-full mx-auto mt-4 mb-4" />
               
               <div className="px-10 pb-4 flex items-center justify-between">
-                <button onClick={() => setIsCheckoutOpen(false)} className="w-10 h-10 rounded-full bg-white flex items-center justify-center active:scale-95 shadow-sm border border-neutral-100">
-                  <ChevronLeft className="w-5 h-5 text-neutral-900" />
+                <button onClick={() => setIsCheckoutOpen(false)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center active:scale-95 shadow-sm border border-white/10 hover:bg-white/20 transition-colors">
+                  <ChevronLeft className="w-5 h-5 text-white" />
                 </button>
                 <h2 className="text-xl font-bold tracking-tight">Checkout</h2>
                 <div className="w-10" />
@@ -566,38 +677,38 @@ export default function App() {
               <div className="flex-1 overflow-y-auto px-10 py-6 pb-40 scroll-smooth">
                 {cartValues.length === 0 ? (
                   <div className="text-center py-24">
-                    <Package className="w-16 h-16 mx-auto text-neutral-200 mb-6" />
-                    <p className="font-bold text-neutral-300 uppercase tracking-widest text-xs mb-8">Cart is currently empty</p>
-                    <button onClick={() => setIsCheckoutOpen(false)} className="bg-black text-white px-10 py-5 rounded-[24px] font-bold text-sm shadow-xl active:scale-95 transition-all">Go Back to Menu</button>
+                    <Package className="w-16 h-16 mx-auto text-white/20 mb-6" />
+                    <p className="font-bold text-white/40 uppercase tracking-widest text-xs mb-8">Cart is currently empty</p>
+                    <button onClick={() => setIsCheckoutOpen(false)} className="bg-white text-black px-10 py-5 rounded-[24px] font-bold text-sm shadow-xl active:scale-95 transition-all">Go Back to Menu</button>
                   </div>
                 ) : (
                   <>
-                    <section className="mb-12 glass-card p-8">
+                    <section className="mb-12 bg-white/5 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 shadow-xl">
                       <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-[10px] font-bold uppercase text-neutral-300 tracking-[0.2em]">Order Summary</h3>
-                        <ShoppingCart className="w-4 h-4 text-neutral-200" />
+                        <h3 className="text-[10px] font-bold uppercase text-white/40 tracking-[0.2em]">Order Summary</h3>
+                        <ShoppingCart className="w-4 h-4 text-white/30" />
                       </div>
                       <div className="space-y-6">
                         {cartValues.map(item => (
                           <div key={item.name} className="flex justify-between items-center group">
                             <div className="flex-1 pr-6">
-                              <p className="font-extrabold text-sm text-neutral-900 leading-tight mb-1">{item.name}</p>
+                              <p className="font-extrabold text-sm text-white leading-tight mb-1">{item.name}</p>
                               <div className="flex items-center gap-2 font-mono tabular-nums">
-                                <span className={`text-[12px] font-black ${theme.text} tracking-tight`}>₱{item.price.toLocaleString()}</span>
+                                <span className={`text-[12px] font-black text-emerald-400 tracking-tight`}>₱{item.price.toLocaleString()}</span>
                               </div>
                             </div>
                             <div className="flex flex-col items-end gap-2">
-                              <span className="font-mono font-black text-lg tabular-nums text-right min-w-[80px] leading-tight">₱{(item.price * item.quantity).toLocaleString()}</span>
-                              <div className="flex items-center gap-1.5 mt-1 border border-neutral-100 rounded-lg p-0.5 shadow-sm bg-white">
-                                <button type="button" onClick={() => updateQuantity(item.name, -1)} className="w-6 h-6 rounded flex items-center justify-center text-neutral-400 hover:text-black hover:bg-neutral-50 active:scale-95 transition-all">
+                              <span className="font-mono font-black text-lg tabular-nums text-right min-w-[80px] leading-tight text-white">₱{(item.price * item.quantity).toLocaleString()}</span>
+                              <div className="flex items-center gap-1.5 mt-1 border border-white/10 rounded-lg p-0.5 shadow-sm bg-white/5">
+                                <button type="button" onClick={() => updateQuantity(item.name, -1)} className="w-6 h-6 rounded flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 active:scale-95 transition-all">
                                   <Minus className="w-3 h-3" />
                                 </button>
-                                <span className="font-mono font-black text-xs w-4 text-center">{item.quantity}</span>
-                                <button type="button" onClick={() => updateQuantity(item.name, 1)} className="w-6 h-6 rounded flex items-center justify-center text-neutral-400 hover:text-black hover:bg-neutral-50 active:scale-95 transition-all">
+                                <span className="font-mono font-black text-xs w-4 text-center text-white">{item.quantity}</span>
+                                <button type="button" onClick={() => updateQuantity(item.name, 1)} className="w-6 h-6 rounded flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 active:scale-95 transition-all">
                                   <Plus className="w-3 h-3" />
                                 </button>
-                                <div className="w-[1px] h-4 bg-neutral-200 mx-1"></div>
-                                <button type="button" onClick={() => updateQuantity(item.name, -item.quantity)} className="w-6 h-6 rounded text-red-400 flex items-center justify-center hover:bg-red-50 hover:text-red-500 active:scale-95 transition-all">
+                                <div className="w-[1px] h-4 bg-white/10 mx-1"></div>
+                                <button type="button" onClick={() => updateQuantity(item.name, -item.quantity)} className="w-6 h-6 rounded text-red-400/80 flex items-center justify-center hover:bg-red-500/20 hover:text-red-400 active:scale-95 transition-all">
                                   <Trash2 className="w-3 h-3" />
                                 </button>
                               </div>
@@ -605,97 +716,151 @@ export default function App() {
                           </div>
                         ))}
                       </div>
-                      <div className="mt-8 pt-8 border-t border-neutral-50 space-y-4">
-                        <div className="flex justify-between text-xs font-bold text-neutral-400 uppercase tracking-widest font-mono tabular-nums">
+                      <div className="mt-8 pt-8 border-t border-white/10 space-y-4">
+                        <div className="flex justify-between text-xs font-bold text-white/40 uppercase tracking-widest font-mono tabular-nums">
                           <span className="font-sans">Subtotal</span>
-                          <span className="text-neutral-900">₱{subtotal.toLocaleString()}</span>
+                          <span className="text-white">₱{subtotal.toLocaleString()}</span>
                         </div>
-                        <div className="flex justify-between text-xs font-bold text-neutral-400 uppercase tracking-widest font-mono tabular-nums">
+                        <div className="flex justify-between text-xs font-bold text-white/40 uppercase tracking-widest font-mono tabular-nums">
                           <span className="font-sans">Delivery</span>
-                          <span className="text-neutral-900">₱{deliveryFee.toLocaleString()}</span>
+                          <span className="text-white">₱{deliveryFee.toLocaleString()}</span>
                         </div>
-                        <div className="flex justify-between text-2xl font-black text-neutral-900 pt-4 font-mono tabular-nums border-t border-dashed border-neutral-200 mt-2">
+                        <div className="flex justify-between text-2xl font-black text-white pt-4 font-mono tabular-nums border-t border-dashed border-white/20 mt-2">
                           <span className="font-sans font-bold">Total</span>
                           <span>₱{total.toLocaleString()}</span>
                         </div>
-                        <div className="bg-neutral-50 p-4 rounded-2xl flex gap-3 mt-6">
-                          <AlertCircle className="w-4 h-4 text-neutral-300 flex-shrink-0" />
-                          <p className="text-[10px] text-neutral-400 italic font-bold leading-relaxed">Yam Venturina will contact you to verify final delivery costs.</p>
+                        <div className="bg-white/5 p-4 rounded-2xl flex gap-3 mt-6 border border-white/5">
+                          <AlertCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                          <p className="text-[10px] text-white/60 italic font-bold leading-relaxed">Yam Venturina will contact you to verify final delivery costs.</p>
                         </div>
                       </div>
                     </section>
 
                     <form onSubmit={handleSubmit} className="space-y-12">
                       <section>
-                        <h3 className="text-[10px] font-bold uppercase mb-6 text-neutral-300 tracking-[0.2em]">Personal Information</h3>
+                        <h3 className="text-[10px] font-bold uppercase mb-6 text-white/40 tracking-[0.2em]">Personal Information</h3>
                         <div className="space-y-4">
                           {[
-                            { id: 'fullName', type: 'text', placeholder: 'Full Name', icon: User },
-                            { id: 'mobile', type: 'text', placeholder: '09XX XXX XXXX', icon: Phone, onChange: handleMobileChange },
-                            { id: 'fbName', type: 'text', placeholder: 'Messenger Name', icon: Facebook },
-                            { id: 'email', type: 'email', placeholder: 'Email Address', icon: Mail }
+                            { id: 'fullName', type: 'text', placeholder: 'Full Name', icon: User, required: true },
+                            { id: 'mobile', type: 'text', placeholder: '09XX XXX XXXX', icon: Phone, onChange: handleMobileChange, required: true },
+                            { id: 'fbName', type: 'text', placeholder: 'Messenger Name (Optional)', icon: Facebook, required: false },
+                            { id: 'email', type: 'email', placeholder: 'Email Address (Optional)', icon: Mail, required: false }
                           ].map((field) => (
                             <div key={field.id} className="relative group">
-                              <field.icon className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300 group-focus-within:text-black transition-colors" />
+                              <field.icon className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 group-focus-within:text-white transition-colors" />
                               <input 
-                                required 
+                                required={field.required}
                                 type={field.type} 
                                 placeholder={field.placeholder} 
-                                className="w-full bg-white border border-neutral-100 rounded-[28px] py-4.5 pl-14 pr-6 text-sm font-bold focus:ring-8 focus:ring-neutral-200/10 focus:outline-none focus:bg-white transition-all shadow-sm"
+                                className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-[24px] py-4.5 pl-14 pr-6 text-sm font-bold focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 focus:outline-none text-white placeholder:text-white/30 transition-all shadow-inner"
                                 value={(formData as any)[field.id]} 
                                 onChange={field.onChange || (e => setFormData({ ...formData, [field.id]: e.target.value }))}
                               />
                             </div>
                           ))}
                           
-                          <div className="space-y-4">
-                            <h4 className="text-[10px] font-bold uppercase text-neutral-300 tracking-[0.1em] ml-2">Delivery Address</h4>
-                            <div className="relative group">
-                              <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300 group-focus-within:text-black transition-colors" />
-                              <input 
-                                required
-                                type="text"
-                                placeholder="Street Address / Residence"
-                                className="w-full bg-white border border-neutral-100 rounded-[28px] py-4.5 pl-14 pr-6 text-sm font-bold focus:ring-8 focus:ring-neutral-200/10 focus:outline-none transition-all shadow-sm"
-                                value={formData.address.street} 
-                                onChange={e => setFormData({ ...formData, address: { ...formData.address, street: e.target.value } })}
-                              />
-                            </div>
-                            <div className="grid grid-cols-1 gap-4">
-                              <input 
-                                required
-                                type="text"
-                                placeholder="City"
-                                className="w-full bg-white border border-neutral-100 rounded-[28px] py-4.5 px-6 text-sm font-bold focus:ring-8 focus:ring-neutral-200/10 focus:outline-none transition-all shadow-sm"
-                                value={formData.address.city} 
-                                onChange={e => setFormData({ ...formData, address: { ...formData.address, city: e.target.value } })}
-                              />
-                              <div className="grid grid-cols-2 gap-4">
-                                <input 
-                                  required
-                                  type="text"
-                                  placeholder="PROVINCE"
-                                  className="w-full bg-white border border-neutral-100 rounded-[28px] py-4.5 px-6 text-sm font-bold focus:ring-8 focus:ring-neutral-200/10 focus:outline-none transition-all shadow-sm uppercase placeholder:normal-case"
-                                  value={formData.address.province} 
-                                  onChange={e => setFormData({ ...formData, address: { ...formData.address, province: e.target.value.toUpperCase() } })}
-                                />
-                                <input 
-                                  required
-                                  type="text"
-                                  placeholder="ZIP Code"
-                                  className="w-full bg-white border border-neutral-100 rounded-[28px] py-4.5 px-6 text-sm font-bold focus:ring-8 focus:ring-neutral-200/10 focus:outline-none transition-all shadow-sm"
-                                  value={formData.address.zip} 
-                                  onChange={e => setFormData({ ...formData, address: { ...formData.address, zip: e.target.value } })}
-                                />
+                          <div className="space-y-4 pt-4">
+                            <h4 className="text-[10px] font-bold uppercase text-white/40 tracking-[0.1em] ml-2">Delivery</h4>
+                            
+                            {!canPickup && (
+                              <div className="flex items-center gap-4 p-4 bg-black/20 backdrop-blur-md rounded-2xl mb-2 border border-white/5">
+                                <AlertCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-white/60">Free Pickup at Paragon Lobby Minimum Order Php 800</p>
                               </div>
+                            )}
+
+                            <div className="flex gap-2">
+                              <button 
+                                type="button" 
+                                onClick={() => setFormData({...formData, deliveryOption: formData.address.region})} 
+                                className={`flex-1 py-4 rounded-[20px] font-bold text-sm border transition-all ${formData.deliveryOption !== 'Pickup' ? 'bg-emerald-500 text-black border-emerald-500 hover:bg-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.3)]' : 'bg-transparent text-white/40 border-white/10 hover:border-white/30 hover:bg-white/5'}`}
+                              >
+                                Delivery
+                              </button>
+                              {canPickup && (
+                                <button 
+                                  type="button" 
+                                  onClick={() => setFormData({...formData, deliveryOption: 'Pickup'})} 
+                                  className={`flex-1 py-4 rounded-[20px] font-bold text-sm border transition-all ${formData.deliveryOption === 'Pickup' ? 'bg-emerald-500 text-black border-emerald-500 hover:bg-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.3)]' : 'bg-transparent text-white/40 border-white/10 hover:border-white/30 hover:bg-white/5'}`}
+                                >
+                                  Pickup
+                                </button>
+                              )}
                             </div>
+
+                            {formData.deliveryOption === 'Pickup' ? (
+                              <div className="mt-4 p-5 bg-black/20 backdrop-blur-md rounded-3xl border border-white/10 flex items-center justify-between shadow-inner">
+                                <div className="flex items-center gap-4">
+                                  <MapPin className="w-5 h-5 text-emerald-500" />
+                                  <p className="text-[10px] font-bold text-white uppercase tracking-widest leading-relaxed">Paragon Plaza<br/><span className="text-white/40">Condominium Lobby</span></p>
+                                </div>
+                                <span className="font-mono font-black text-emerald-400">FREE</span>
+                              </div>
+                            ) : (
+                              <div className="space-y-4 pt-2">
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div className="relative group">
+                                    <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 group-focus-within:text-white transition-colors z-10" />
+                                    <select 
+                                      className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-[24px] py-4.5 pl-14 pr-6 text-sm font-bold focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 focus:outline-none text-white appearance-none"
+                                      value={formData.address.region}
+                                      onChange={e => setFormData({ ...formData, address: { ...formData.address, region: e.target.value, provinceCode: '', province: '', cityCode: '', city: '' }, deliveryOption: e.target.value })}
+                                    >
+                                      <option value="Luzon">Luzon</option>
+                                      <option value="Visayas">Visayas</option>
+                                      <option value="Mindanao">Mindanao</option>
+                                    </select>
+                                  </div>
+                                  <div className="relative group">
+                                    <select 
+                                      required
+                                      className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-[24px] py-4.5 px-6 text-sm font-bold focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 focus:outline-none text-white appearance-none disabled:opacity-50"
+                                      value={formData.address.provinceCode}
+                                      onChange={e => setFormData({ ...formData, address: { ...formData.address, provinceCode: e.target.value, province: e.target.options[e.target.selectedIndex].text, cityCode: '', city: '' } })}
+                                    >
+                                      <option value="" disabled>Select Province</option>
+                                      {provinces.map(p => <option key={p.code} value={p.code}>{p.name}</option>)}
+                                    </select>
+                                  </div>
+                                </div>
+                                <div className="grid grid-cols-1 gap-4">
+                                  <select 
+                                    required
+                                    className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-[24px] py-4.5 px-6 text-sm font-bold focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 focus:outline-none text-white appearance-none disabled:opacity-50"
+                                    value={formData.address.cityCode}
+                                    disabled={!formData.address.provinceCode}
+                                    onChange={e => setFormData({ ...formData, address: { ...formData.address, cityCode: e.target.value, city: e.target.options[e.target.selectedIndex].text } })}
+                                  >
+                                    <option value="" disabled>Select City / Municipality</option>
+                                    {cities.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
+                                  </select>
+                                </div>
+                                <div className="grid grid-cols-[1fr_120px] gap-4">
+                                  <input 
+                                    required
+                                    type="text"
+                                    placeholder="Barangay / Street / House No."
+                                    className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-[24px] py-4.5 px-6 text-sm font-bold focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 focus:outline-none text-white placeholder:text-white/30 transition-all shadow-inner"
+                                    value={formData.address.street} 
+                                    onChange={e => setFormData({ ...formData, address: { ...formData.address, street: e.target.value } })}
+                                  />
+                                  <input 
+                                    type="text"
+                                    placeholder="ZIP (Optional)"
+                                    className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-[24px] py-4.5 px-6 text-sm font-bold focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 focus:outline-none text-white placeholder:text-white/30 transition-all shadow-inner"
+                                    value={formData.address.zip} 
+                                    onChange={e => setFormData({ ...formData, address: { ...formData.address, zip: e.target.value } })}
+                                  />
+                                </div>
+                              </div>
+                            )}
                           </div>
 
-                          <div className="relative group">
-                            <StickyNote className="absolute left-5 top-5 w-4 h-4 text-neutral-300 group-focus-within:text-black transition-colors" />
+                          <div className="relative group pt-4">
+                            <StickyNote className="absolute left-5 top-5 w-4 h-4 text-white/30 group-focus-within:text-white transition-colors" />
                             <textarea 
-                              placeholder="Notes for shipping..." 
-                              className="w-full bg-white border border-neutral-100 rounded-[28px] py-5 pl-14 pr-6 text-sm font-bold min-h-[100px] focus:ring-8 focus:ring-neutral-200/10 focus:outline-none resize-none transition-all shadow-sm"
+                              placeholder="Notes for shipping (Optional)..." 
+                              className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-[28px] py-5 pl-14 pr-6 text-sm font-bold min-h-[100px] focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 focus:outline-none resize-none transition-all shadow-inner text-white placeholder:text-white/30"
                               value={formData.notes} 
                               onChange={e => setFormData({ ...formData, notes: e.target.value })}
                             />
@@ -704,53 +869,22 @@ export default function App() {
                       </section>
 
                       <section>
-                        <h3 className="text-[10px] font-bold uppercase mb-6 text-neutral-300 tracking-[0.2em]">Shipping Policy</h3>
-                        {!canPickup && (
-                          <div className="flex items-center gap-4 p-5 bg-black text-white rounded-3xl mb-5 shadow-xl shadow-black/10">
-                            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 animate-pulse" />
-                            <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed">Free Pickup at Paragon Lobby unlocks at ₱800</p>
-                          </div>
-                        )}
-                        <div className="grid grid-cols-1 gap-3">
-                          {Object.keys(DELIVERY_FEES).filter(opt => opt !== 'Pickup' || canPickup).map(opt => (
-                            <button
-                              key={opt} type="button"
-                              onClick={() => setFormData({ ...formData, deliveryOption: opt })}
-                              className={`flex items-center justify-between p-5 rounded-[28px] border transition-all text-sm font-bold ${formData.deliveryOption === opt ? 'bg-black text-white border-black shadow-2xl scale-[1.02]' : 'bg-white border-neutral-100 text-neutral-900 shadow-sm hover:translate-x-1'}`}
-                            >
-                              <div className="flex items-center gap-4">
-                                {opt === 'Pickup' ? <MapPin className="w-4 h-4" /> : <Truck className="w-4 h-4" />}
-                                <span className="uppercase tracking-tight">{opt}</span>
-                              </div>
-                              <span className={`text-[10px] font-mono tabular-nums uppercase ${formData.deliveryOption === opt ? 'opacity-60' : 'text-neutral-400'}`}>₱{(DELIVERY_FEES as any)[opt]}</span>
-                            </button>
-                          ))}
-                        </div>
-                        {formData.deliveryOption === 'Pickup' && (
-                          <div className="mt-5 p-5 bg-white rounded-3xl border border-neutral-100 flex items-center gap-4 shadow-inner">
-                            <MapPin className="w-5 h-5 text-emerald-500" />
-                            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest leading-relaxed italic">Paragon Plaza Condominium (Lobby)</p>
-                          </div>
-                        )}
-                      </section>
-
-                      <section>
-                        <h3 className="text-[10px] font-bold uppercase mb-6 text-neutral-300 tracking-[0.2em]">Payment Collection</h3>
+                        <h3 className="text-[10px] font-bold uppercase mb-6 text-white/40 tracking-[0.2em]">Payment Collection</h3>
                         <div className="grid grid-cols-1 gap-4">
                           {Object.entries(PAYMENT_METHODS).map(([method, data]) => (
                             <div key={method} className="flex flex-col gap-4">
                               <button
                                 type="button"
                                 onClick={() => setFormData({ ...formData, paymentMethod: method })}
-                                className={`flex flex-col p-6 rounded-[32px] border transition-all text-sm text-left ${formData.paymentMethod === method ? 'bg-black text-white border-black shadow-2xl scale-[1.02]' : 'bg-white border-neutral-100 text-neutral-900 shadow-sm'}`}
+                                className={`flex flex-col p-6 rounded-[32px] border transition-all text-sm text-left ${formData.paymentMethod === method ? 'bg-emerald-500 text-black border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)] scale-[1.02]' : 'bg-black/20 backdrop-blur-md border-white/10 text-white shadow-inner hover:bg-white/5'}`}
                               >
                                 <div className="flex items-center gap-4 mb-3">
-                                  <CreditCard className={`w-5 h-5 ${formData.paymentMethod === method ? 'text-white' : 'text-neutral-200'}`} />
+                                  <CreditCard className={`w-5 h-5 ${formData.paymentMethod === method ? 'text-black/60' : 'text-white/40'}`} />
                                   <span className="font-bold uppercase tracking-[0.2em]">{method}</span>
                                 </div>
-                                <div className="flex flex-col items-start pl-9 text-[10px] gap-1 opacity-60">
+                                <div className={`flex flex-col items-start pl-9 text-[10px] gap-1 ${formData.paymentMethod === method ? 'text-black/80' : 'text-white/60'}`}>
                                   <p className="font-bold italic">{data.name}</p>
-                                  <p className="font-mono font-bold underline underline-offset-4 decoration-neutral-500">{data.details}</p>
+                                  <p className="font-mono font-bold underline underline-offset-4 decoration-current">{data.details}</p>
                                 </div>
                               </button>
                               
@@ -762,11 +896,11 @@ export default function App() {
                                     exit={{ height: 0, opacity: 0 }}
                                     className="overflow-hidden"
                                   >
-                                    <div className="bg-white p-8 rounded-[40px] border border-neutral-100 flex flex-col items-center justify-center gap-6 shadow-xl mb-4">
+                                    <div className="bg-black/20 backdrop-blur-md p-8 rounded-[40px] border border-white/5 flex flex-col items-center justify-center gap-6 shadow-inner mb-4">
                                       <div className="relative group">
-                                        <div className="absolute -inset-4 bg-neutral-50 rounded-[48px] -z-10 group-hover:bg-neutral-100 transition-colors" />
+                                        <div className="absolute -inset-4 bg-white/5 rounded-[48px] -z-10 group-hover:bg-white/10 transition-colors" />
                                           <div 
-                                            className="w-full aspect-square max-w-[200px] mx-auto bg-white rounded-3xl flex items-center justify-center border-4 border-white shadow-inner overflow-hidden relative cursor-zoom-in"
+                                            className="w-full aspect-square max-w-[200px] mx-auto bg-white rounded-3xl flex items-center justify-center border-4 border-white shadow-xl overflow-hidden relative cursor-zoom-in"
                                             onClick={() => setSelectedQR({ method, qr: (data as any).qr })}
                                           >
                                              <img 
@@ -778,25 +912,22 @@ export default function App() {
                                           </div>
                                       </div>
                                       <div className="text-center">
-                                        <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-300 mb-2">Scan with {method} app</p>
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Scan with {method} app</p>
                                         <div className="flex flex-col items-center gap-4">
-                                          <p className="font-mono font-bold text-xs">{data.details}</p>
+                                          <p className="font-mono font-bold text-xs text-white">{data.details}</p>
                                           <div className="flex gap-2">
                                             <button 
                                               type="button"
                                               onClick={() => setSelectedQR({ method, qr: (data as any).qr })}
-                                              className="text-[9px] font-bold uppercase tracking-wider px-4 py-2 bg-neutral-50 rounded-full border border-neutral-100 hover:bg-neutral-100 transition-colors flex items-center gap-2"
+                                              className="text-[9px] font-bold uppercase tracking-wider px-4 py-2 bg-white/5 text-white rounded-full border border-white/10 hover:bg-white/10 transition-colors flex items-center gap-2"
                                             >
                                               <Search className="w-3 h-3" /> View Large
                                             </button>
                                             <a 
                                               href={(data as any).qr} 
                                               download={`${method}-QR.png`}
-                                              onClick={(e) => {
-                                                // If it's a relative path, we might need to handle the download differently
-                                                // but for public assets, standard download attribute usually works
-                                              }}
-                                              className="text-[9px] font-bold uppercase tracking-wider px-4 py-2 bg-neutral-800 text-white rounded-full hover:bg-black transition-colors flex items-center gap-2 shadow-sm"
+                                              onClick={(e) => {}}
+                                              className="text-[9px] font-bold uppercase tracking-wider px-4 py-2 bg-emerald-500 text-black rounded-full hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
                                             >
                                               <Download className="w-3 h-3" /> Save QR
                                             </a>
@@ -812,9 +943,9 @@ export default function App() {
                         </div>
                       </section>
 
-                      <div className="bg-neutral-900 text-white p-8 rounded-[48px] shadow-2xl border border-white/5 relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-white/10 transition-all duration-700" />
-                        <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] mb-6 opacity-30">Procedure</h4>
+                      <div className="bg-white/5 backdrop-blur-xl text-white p-8 rounded-[48px] shadow-xl border border-white/10 relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-emerald-500/10 transition-all duration-700" />
+                        <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] mb-6 text-white/40">Procedure</h4>
                         <ol className="space-y-6">
                           {[
                             "Transfer payment & Send Screenshot via Messenger/WhatsApp.",
@@ -823,14 +954,14 @@ export default function App() {
                             "Send the text & screenshot to Yam via Messenger or WhatsApp."
                           ].map((step, i) => (
                             <li key={i} className="flex gap-5 text-xs font-bold leading-relaxed group-hover:translate-x-1 transition-transform">
-                              <span className="w-6 h-6 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 text-[10px] font-bold">{i+1}</span>
+                              <span className="w-6 h-6 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 text-[10px] font-bold text-emerald-400">{i+1}</span>
                               <span className="opacity-80 group-hover:opacity-100 transition-opacity">{step}</span>
                             </li>
                           ))}
                         </ol>
                       </div>
 
-                      <button type="submit" className="w-full bg-black text-white rounded-[32px] py-7 font-bold text-xl shadow-2xl shadow-black/30 active:scale-95 transition-all mb-16 border border-white/10 ring-4 ring-black/5">Submit Order</button>
+                      <button type="submit" className="w-full bg-emerald-500 text-black rounded-[32px] py-7 font-bold text-xl shadow-[0_0_30px_rgba(16,185,129,0.2)] active:scale-95 transition-all mb-16 border border-emerald-400 ring-4 ring-emerald-500/20 hover:bg-emerald-400">Submit Order</button>
                     </form>
                   </>
                 )}
@@ -843,38 +974,64 @@ export default function App() {
       {/* Success Modal */}
       <AnimatePresence>
         {isSuccess && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-2xl">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/95 backdrop-blur-3xl overflow-y-auto">
             <motion.div 
-              initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-              className="bg-white rounded-[56px] w-full max-w-sm p-12 flex flex-col items-center text-center shadow-3xl relative border border-white"
+              initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }}
+              className="bg-[#1C1C1E]/80 backdrop-blur-3xl rounded-[56px] w-full max-w-md p-8 md:p-12 flex flex-col items-center text-center shadow-2xl relative border border-white/10 my-10"
             >
-              <div className="w-28 h-28 rounded-full bg-emerald-50 flex items-center justify-center mb-8 border-8 border-emerald-500/5 shadow-inner">
-                <CheckCircle2 className="w-14 h-14 text-emerald-600" />
+              <div className="w-24 h-24 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6 border-4 border-emerald-500/20 shadow-inner">
+                <CheckCircle2 className="w-12 h-12 text-emerald-400" />
               </div>
-              <h2 className="text-3xl font-bold mb-3 text-neutral-900 tracking-tight">Order Saved</h2>
-              <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mb-12 leading-relaxed max-w-[220px]">Summary copied to clipboard. Send it to Yam with your payment screenshot.</p>
+              <h2 className="text-2xl font-bold mb-2 text-white tracking-tight">Order Saved</h2>
+              <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest mb-8 leading-relaxed">Summary copied to clipboard. Send it to Yam with your payment screenshot.</p>
               
-              <div className="w-full space-y-4">
+              <div className="w-full bg-black/20 backdrop-blur-md rounded-[32px] p-6 mb-8 border border-white/5 text-left shadow-inner">
+                <h3 className="text-[10px] font-bold uppercase text-white/40 mb-4 tracking-[0.2em] flex items-center gap-2"><ShoppingCart className="w-3 h-3" /> Order Summary</h3>
+                <div className="space-y-3 mb-6">
+                  {cartValues.map(item => (
+                    <div key={item.name} className="flex justify-between items-center text-sm font-bold">
+                      <span className="text-white/80">{item.quantity}x {item.name}</span>
+                      <span className="font-mono text-emerald-400">₱{(item.price * item.quantity).toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="pt-4 border-t border-white/10 space-y-2">
+                  <div className="flex justify-between items-center text-xs font-bold text-white/40 font-mono">
+                    <span className="font-sans uppercase tracking-[0.1em]">Subtotal</span>
+                    <span>₱{subtotal.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs font-bold text-white/40 font-mono">
+                    <span className="font-sans uppercase tracking-[0.1em]">Delivery</span>
+                    <span>₱{deliveryFee.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-lg font-black text-white pt-2 font-mono">
+                    <span className="font-sans uppercase tracking-[0.1em] text-sm">Total</span>
+                    <span>₱{total.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-full space-y-3">
                 <button 
                   onClick={() => {
                     navigator.clipboard.writeText(generateOrderText());
                     showToast('Summary Re-copied');
                   }}
-                  className="w-full bg-neutral-100 text-neutral-900 border border-neutral-200 py-5 rounded-[28px] font-bold flex items-center justify-center gap-4 text-xs active:scale-95 transition-all shadow-sm"
+                  className="w-full bg-white/5 hover:bg-white/10 text-white border border-white/10 py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 text-xs active:scale-[0.98] transition-all shadow-sm"
                 >
-                  <Copy className="w-5 h-5" /> Copy Order Summary
+                  <Copy className="w-4 h-4" /> Copy Order Text
                 </button>
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-3">
+                  <a href="https://www.facebook.com/profile.php?id=61582492107190" target="_blank" rel="noreferrer" className="w-full bg-[#1877F2]/10 hover:bg-[#1877F2]/20 border border-[#1877F2]/20 text-[#1877F2] py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 active:scale-[0.98] transition-all text-xs">
+                    <Facebook className="w-5 h-5" /> Message on Facebook
+                  </a>
                   <a 
                     href={`https://wa.me/639615078790?text=${encodeURIComponent(generateOrderText())}`} 
                     target="_blank" 
                     rel="noreferrer" 
-                    className="w-full bg-[#25D366] text-white py-6 rounded-[28px] font-bold flex items-center justify-center gap-4 active:scale-95 transition-all text-xs uppercase shadow-lg shadow-[#25D366]/20"
+                    className="w-full bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/20 text-[#25D366] py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 active:scale-[0.98] transition-all text-xs"
                   >
-                    <MessageCircle className="w-6 h-6" /> Send via WhatsApp
-                  </a>
-                  <a href="https://www.facebook.com/profile.php?id=61582492107190" target="_blank" rel="noreferrer" className="w-full bg-[#1877F2] text-white py-6 rounded-[28px] font-bold flex items-center justify-center gap-4 active:scale-95 transition-all text-xs uppercase shadow-lg shadow-[#1877F2]/20">
-                    <Facebook className="w-6 h-6" /> Message on Facebook
+                    <MessageCircle className="w-5 h-5" /> Send via WhatsApp
                   </a>
                 </div>
               </div>
@@ -883,11 +1040,11 @@ export default function App() {
                 onClick={() => {
                   setCart({});
                   setIsSuccess(false);
-                  setFormData({ fullName: '', mobile: '', fbName: '', email: '', address: { street: '', city: '', province: '', zip: '' }, notes: '', deliveryOption: 'Luzon', paymentMethod: 'GCash' });
+                  setFormData({ fullName: '', mobile: '', fbName: '', email: '', address: { region: 'Luzon', provinceCode: '', province: '', cityCode: '', city: '', street: '', zip: '' }, notes: '', deliveryOption: 'Luzon', paymentMethod: 'GCash' });
                 }}
-                className="mt-12 text-neutral-300 font-bold text-[10px] uppercase tracking-[0.4em] hover:text-black transition-all"
+                className="mt-10 bg-emerald-500 text-black px-10 py-5 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-emerald-400 active:scale-95 transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)]"
               >
-                Reset Session
+                Place Another Order
               </button>
             </motion.div>
           </div>
