@@ -31,6 +31,12 @@ import {
   Leaf
 } from 'lucide-react';
 
+import gcashQr from './assets/gcash.png';
+import bpiQr from './assets/bpi.png';
+import mariQr from './assets/mari.png';
+import mayaQr from './assets/maya.png';
+import gotymeQr from './assets/gotyme.png';
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 
@@ -221,11 +227,11 @@ const DELIVERY_FEES = {
 };
 
 const PAYMENT_METHODS = {
-  GCash: { name: 'Yam Venturina', details: '0961 507 8790', color: '#007DFE', qr: '/assets/gcash.png' },
-  BPI: { name: 'Yam Venturina', details: 'xxxxxxxxxxxx632', color: '#B30000', qr: '/assets/bpi.png' },
-  MariBank: { name: 'Yam Inri Venturina', details: '****6997', color: '#FF5722', qr: '/assets/mari.png' },
-  Maya: { name: 'Yam Inri Venturina', details: '@yaminri03', color: '#000000', qr: '/assets/maya.png' },
-  GoTyme: { name: 'Yam Inri Venturina', details: '7599', color: '#005AC6', qr: '/assets/gotyme.png' }
+  GCash: { name: 'Yam Venturina', details: '0961 507 8790', color: '#007DFE', qr: gcashQr },
+  BPI: { name: 'Yam Venturina', details: 'xxxxxxxxxxxx632', color: '#B30000', qr: bpiQr },
+  MariBank: { name: 'Yam Inri Venturina', details: '****6997', color: '#FF5722', qr: mariQr },
+  Maya: { name: 'Yam Inri Venturina', details: '@yaminri03', color: '#000000', qr: mayaQr },
+  GoTyme: { name: 'Yam Inri Venturina', details: '7599', color: '#005AC6', qr: gotymeQr }
 };
 
 // --- Main App Component ---
