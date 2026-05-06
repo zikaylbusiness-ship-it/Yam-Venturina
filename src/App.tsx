@@ -752,17 +752,13 @@ export default function App() {
                                       <div className="relative group">
                                         <div className="absolute -inset-4 bg-neutral-50 rounded-[48px] -z-10 group-hover:bg-neutral-100 transition-colors" />
                                           <div 
-                                            className="w-56 h-56 bg-white rounded-3xl flex items-center justify-center border-4 border-white shadow-inner overflow-hidden relative cursor-zoom-in"
+                                            className="w-full aspect-square max-w-[200px] mx-auto bg-white rounded-3xl flex items-center justify-center border-4 border-white shadow-inner overflow-hidden relative cursor-zoom-in"
                                             onClick={() => setSelectedQR({ method, qr: (data as any).qr })}
                                           >
                                              <img 
                                                src={(data as any).qr} 
                                                alt={`${method} QR Code`}
-                                               className="w-full h-full object-contain p-2 bg-white"
-                                               onError={(e) => {
-                                                 // Fallback to QR API if local image fails
-                                                 (e.target as HTMLImageElement).src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(data.details)}`;
-                                               }}
+                                               className="w-full h-full object-contain p-0"
                                                referrerPolicy="no-referrer"
                                              />
                                           </div>
@@ -915,11 +911,12 @@ export default function App() {
                 <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mt-1">Scan or Download to Pay</p>
               </div>
 
-              <div className="w-full aspect-square bg-white rounded-3xl border-4 border-neutral-100 shadow-xl flex items-center justify-center overflow-hidden">
+              <div className="w-full max-w-sm mx-auto aspect-square bg-white rounded-3xl border-4 border-neutral-100 shadow-xl flex items-center justify-center overflow-hidden">
                 <img 
                   src={selectedQR.qr} 
                   alt="Full Size QR"
-                  className="w-full h-full object-contain p-4 bg-white"
+                  className="w-full h-full object-contain p-0"
+                  referrerPolicy="no-referrer"
                 />
               </div>
 
