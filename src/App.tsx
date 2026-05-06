@@ -461,10 +461,10 @@ export default function App() {
                       <p className="text-[11px] text-neutral-400 font-semibold mt-1 uppercase tracking-tighter opacity-60">{item.pack}</p>
                     </div>
 
-                    <div className="flex flex-col items-center justify-center px-4 border-x border-white/20 min-w-[90px]">
-                      <div className="bg-white/30 backdrop-blur-md px-3 py-2 rounded-xl border border-white/20">
-                        <div className={`font-mono font-extrabold text-base tabular-nums whitespace-nowrap flex items-center gap-0.5 ${theme.text}`}>
-                          <span className="text-[11px] opacity-40 font-sans">₱</span>
+                    <div className="flex flex-col items-center justify-center px-5 min-w-[100px]">
+                      <div className={`bg-white px-3 py-2 rounded-xl border border-black/5 shadow-sm`}>
+                        <div className={`font-mono font-black text-lg tabular-nums whitespace-nowrap flex items-center gap-0.5 ${theme.text}`}>
+                          <span className="text-[12px] opacity-40 font-sans font-semibold">₱</span>
                           {item.price.toLocaleString(undefined, { minimumFractionDigits: 0 })}
                         </div>
                       </div>
@@ -509,12 +509,12 @@ export default function App() {
               className="w-full bg-black/80 backdrop-blur-3xl text-white rounded-[40px] p-6 shadow-2xl flex items-center justify-between active:scale-[0.97] transition-all border border-white/10"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/10">
+                <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/10">
                   <ShoppingCart className="w-6 h-6 text-white" />
                 </div>
                 <div className="text-left leading-tight">
-                  <p className="text-[10px] font-bold opacity-40 uppercase tracking-[0.2em]">Summary</p>
-                  <p className="text-lg font-mono font-extrabold">₱{total.toLocaleString()}</p>
+                  <p className="text-[11px] font-bold opacity-50 uppercase tracking-[0.2em] font-inter">Summary</p>
+                  <p className="text-2xl font-mono font-black mt-0.5">₱{total.toLocaleString()}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -570,12 +570,12 @@ export default function App() {
                             <div className="flex-1 pr-6">
                               <p className="font-extrabold text-sm text-neutral-900 leading-tight mb-1">{item.name}</p>
                               <div className="flex items-center gap-2 font-mono tabular-nums">
-                                <span className={`text-[10px] font-extrabold ${theme.text}`}>₱{item.price.toLocaleString()}</span>
+                                <span className={`text-[12px] font-black ${theme.text} tracking-tight`}>₱{item.price.toLocaleString()}</span>
                                 <span className="text-[10px] font-bold text-neutral-300">×</span>
-                                <span className="text-[10px] font-bold text-neutral-400">{item.quantity}</span>
+                                <span className="text-[12px] font-black text-neutral-400">{item.quantity}</span>
                               </div>
                             </div>
-                            <span className="font-mono font-extrabold text-base tabular-nums text-right min-w-[80px]">₱{(item.price * item.quantity).toLocaleString()}</span>
+                            <span className="font-mono font-black text-lg tabular-nums text-right min-w-[80px]">₱{(item.price * item.quantity).toLocaleString()}</span>
                           </div>
                         ))}
                       </div>
@@ -588,8 +588,8 @@ export default function App() {
                           <span className="font-sans">Delivery</span>
                           <span className="text-neutral-900">₱{deliveryFee.toLocaleString()}</span>
                         </div>
-                        <div className="flex justify-between text-2xl font-extrabold text-neutral-900 pt-4 font-mono tabular-nums">
-                          <span className="font-sans">Total</span>
+                        <div className="flex justify-between text-2xl font-black text-neutral-900 pt-4 font-mono tabular-nums border-t border-dashed border-neutral-200 mt-2">
+                          <span className="font-sans font-bold">Total</span>
                           <span>₱{total.toLocaleString()}</span>
                         </div>
                         <div className="bg-neutral-50 p-4 rounded-2xl flex gap-3 mt-6">
@@ -907,7 +907,7 @@ export default function App() {
                 <img 
                   src={selectedQR.qr} 
                   alt="Full Size QR"
-                  className="w-full h-full object-contain p-4"
+                  className="w-full h-full object-contain p-4 mix-blend-multiply"
                 />
               </div>
 
