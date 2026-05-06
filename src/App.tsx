@@ -28,7 +28,8 @@ import {
   Download,
   X,
   Utensils,
-  Leaf
+  Leaf,
+  Trash2
 } from 'lucide-react';
 
 import gcashQr from './assets/gcash.png';
@@ -583,11 +584,24 @@ export default function App() {
                               <p className="font-extrabold text-sm text-neutral-900 leading-tight mb-1">{item.name}</p>
                               <div className="flex items-center gap-2 font-mono tabular-nums">
                                 <span className={`text-[12px] font-black ${theme.text} tracking-tight`}>₱{item.price.toLocaleString()}</span>
-                                <span className="text-[10px] font-bold text-neutral-300">×</span>
-                                <span className="text-[12px] font-black text-neutral-400">{item.quantity}</span>
                               </div>
                             </div>
-                            <span className="font-mono font-black text-lg tabular-nums text-right min-w-[80px]">₱{(item.price * item.quantity).toLocaleString()}</span>
+                            <div className="flex flex-col items-end gap-2">
+                              <span className="font-mono font-black text-lg tabular-nums text-right min-w-[80px] leading-tight">₱{(item.price * item.quantity).toLocaleString()}</span>
+                              <div className="flex items-center gap-1.5 mt-1 border border-neutral-100 rounded-lg p-0.5 shadow-sm bg-white">
+                                <button type="button" onClick={() => updateQuantity(item.name, -1)} className="w-6 h-6 rounded flex items-center justify-center text-neutral-400 hover:text-black hover:bg-neutral-50 active:scale-95 transition-all">
+                                  <Minus className="w-3 h-3" />
+                                </button>
+                                <span className="font-mono font-black text-xs w-4 text-center">{item.quantity}</span>
+                                <button type="button" onClick={() => updateQuantity(item.name, 1)} className="w-6 h-6 rounded flex items-center justify-center text-neutral-400 hover:text-black hover:bg-neutral-50 active:scale-95 transition-all">
+                                  <Plus className="w-3 h-3" />
+                                </button>
+                                <div className="w-[1px] h-4 bg-neutral-200 mx-1"></div>
+                                <button type="button" onClick={() => updateQuantity(item.name, -item.quantity)} className="w-6 h-6 rounded text-red-400 flex items-center justify-center hover:bg-red-50 hover:text-red-500 active:scale-95 transition-all">
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </div>
                           </div>
                         ))}
                       </div>
