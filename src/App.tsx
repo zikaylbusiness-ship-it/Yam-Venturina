@@ -26,7 +26,9 @@ import {
   AlertCircle,
   Menu,
   Download,
-  X
+  X,
+  Utensils,
+  Leaf
 } from 'lucide-react';
 
 const app = initializeApp(firebaseConfig);
@@ -400,7 +402,11 @@ export default function App() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${theme.brand} shadow-lg shadow-black/5`}>
-                <Package className="w-6 h-6 text-white" />
+                {activeTab === 'food' ? (
+                  <Utensils className="w-6 h-6 text-white" />
+                ) : (
+                  <Leaf className="w-6 h-6 text-white" />
+                )}
               </div>
               <h1 className="text-xl font-bold tracking-tight text-neutral-900">Yam Venturina</h1>
             </div>
@@ -740,13 +746,13 @@ export default function App() {
                                       <div className="relative group">
                                         <div className="absolute -inset-4 bg-neutral-50 rounded-[48px] -z-10 group-hover:bg-neutral-100 transition-colors" />
                                           <div 
-                                            className="w-56 h-56 bg-neutral-50 rounded-3xl flex items-center justify-center border-4 border-white shadow-inner overflow-hidden relative cursor-zoom-in"
+                                            className="w-56 h-56 bg-white rounded-3xl flex items-center justify-center border-4 border-white shadow-inner overflow-hidden relative cursor-zoom-in"
                                             onClick={() => setSelectedQR({ method, qr: (data as any).qr })}
                                           >
                                              <img 
                                                src={(data as any).qr} 
                                                alt={`${method} QR Code`}
-                                               className="w-full h-full object-contain p-2"
+                                               className="w-full h-full object-contain p-2 bg-white"
                                                onError={(e) => {
                                                  // Fallback to QR API if local image fails
                                                  (e.target as HTMLImageElement).src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(data.details)}`;
@@ -903,11 +909,11 @@ export default function App() {
                 <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mt-1">Scan or Download to Pay</p>
               </div>
 
-              <div className="w-full aspect-square bg-neutral-50 rounded-3xl border-4 border-white shadow-xl flex items-center justify-center overflow-hidden">
+              <div className="w-full aspect-square bg-white rounded-3xl border-4 border-neutral-100 shadow-xl flex items-center justify-center overflow-hidden">
                 <img 
                   src={selectedQR.qr} 
                   alt="Full Size QR"
-                  className="w-full h-full object-contain p-4 mix-blend-multiply"
+                  className="w-full h-full object-contain p-4 bg-white"
                 />
               </div>
 
