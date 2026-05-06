@@ -1,0 +1,41 @@
+{
+  "entities": {
+    "Order": {
+      "title": "Order",
+      "description": "Customer order details",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string" },
+        "mobile": { "type": "string" },
+        "fbName": { "type": "string" },
+        "email": { "type": "string" },
+        "address": {
+          "type": "object",
+          "properties": {
+            "street": { "type": "string" },
+            "city": { "type": "string" },
+            "province": { "type": "string" },
+            "zip": { "type": "string" }
+          },
+          "required": ["street", "city", "province"]
+        },
+        "notes": { "type": "string" },
+        "deliveryOption": { "type": "string" },
+        "paymentMethod": { "type": "string" },
+        "subtotal": { "type": "number" },
+        "deliveryFee": { "type": "number" },
+        "total": { "type": "number" },
+        "items": { "type": "array" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["fullName", "mobile", "address", "total"]
+    }
+  },
+  "firestore": {
+    "orders": {
+      "schema": "Order",
+      "description": "Collection of customer orders"
+    }
+  }
+}

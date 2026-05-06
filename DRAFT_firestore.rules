@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    // Orders Collection
+    match /orders/{orderId} {
+      allow create: if true; // Allow anyone to submit an order
+      allow get: if true; // Allow checking order status if user has ID (simplified for this app)
+      
+      // Validation helper
+      function isValidOrder(data) {
+        return data.keys().hasAll(['fullName', 'mobile', 'address', 'total', 'items', 'createdAt'])
+          && data.fullName is string && data.fullName.size() <= 200
+          && data.mobile is string && data.mobile.size() <= 20
+          && data.address is map
+          && data.address.province is string && data.address.province.size() <= 100
+          && data.total is number 
+          && data.items is list
+          && data.createdAt == request.time;
+      }
+    }
+  }
+}
