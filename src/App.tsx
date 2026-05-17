@@ -49,6 +49,7 @@ interface Product {
   name: string;
   pack: string;
   price: number;
+  image?: string;
 }
 
 interface CartItem extends Product {
@@ -68,83 +69,83 @@ const CATALOG: { [key: string]: CatalogCategory } = {
     label: 'Food',
     franchises: {
       'Siomai King': [
-        { name: 'SK Chicken w/ Chili Garlic', pack: '40 pcs/pack (Frozen)', price: 325 },
-        { name: 'SK Chicken w/ Corn & Malunggay', pack: '40 pcs/pack (Frozen)', price: 331 },
-        { name: 'SK Shanghai w/ Chili Garlic', pack: '40 pcs/pack (Frozen)', price: 335 },
-        { name: 'SK Hongkong w/ Chili Garlic', pack: '40 pcs/pack (Frozen)', price: 345 },
-        { name: 'SK Beef w/ Chili Garlic', pack: '40 pcs/pack (Frozen)', price: 351 },
-        { name: 'SK Japanese w/ Chili Garlic', pack: '40 pcs/pack (Frozen)', price: 386 }
+        { name: 'SK Chicken w/ Chili Garlic', pack: '40 pcs/pack (Frozen)', price: 325, image: 'sk-chicken-siomai-chili-garlic.png' },
+        { name: 'SK Chicken w/ Corn & Malunggay', pack: '40 pcs/pack (Frozen)', price: 331, image: 'sk-chicken-corn-malunggay-siomai.png' },
+        { name: 'SK Shanghai w/ Chili Garlic', pack: '40 pcs/pack (Frozen)', price: 335, image: 'sk-shanghai-siomai-chili-garlic.png' },
+        { name: 'SK Hongkong w/ Chili Garlic', pack: '40 pcs/pack (Frozen)', price: 345, image: 'sk-hongkong-siomai-chili-garlic.png' },
+        { name: 'SK Beef w/ Chili Garlic', pack: '40 pcs/pack (Frozen)', price: 351, image: 'sk-beef-siomai-chili-garlic.png' },
+        { name: 'SK Japanese w/ Chili Garlic', pack: '40 pcs/pack (Frozen)', price: 386, image: 'sk-japanese-siomai-chili-garlic.png' }
       ],
       'Sulit Pack Siomai': [
-        { name: 'SK Sulit Pack Spicy Chicken Siomai', pack: '40 pcs/pack', price: 145 },
-        { name: 'SK Sulit Pack Chicken Siomai', pack: '40 pcs/pack', price: 145 },
-        { name: 'SK Sulit Pack Pork Siomai', pack: '40 pcs/pack', price: 147 },
-        { name: 'SK Sulit Pack Longganisa Siomai', pack: '40 pcs/pack', price: 153 },
-        { name: 'SK Sulit Pack Beef Siomai', pack: '40 pcs/pack', price: 184 },
-        { name: 'SK Sulit Pack Japanese Siomai', pack: '40 pcs/pack', price: 220 }
+        { name: 'SK Sulit Pack Spicy Chicken Siomai', pack: '40 pcs/pack', price: 145, image: 'sk-sulit-pack-spicy-siomai.png' },
+        { name: 'SK Sulit Pack Chicken Siomai', pack: '40 pcs/pack', price: 145, image: 'sk-sulit-pack-chicken-siomai.png' },
+        { name: 'SK Sulit Pack Pork Siomai', pack: '40 pcs/pack', price: 147, image: 'sk-sulit-pack-pork-siomai.png' },
+        { name: 'SK Sulit Pack Longganisa Siomai', pack: '40 pcs/pack', price: 153, image: 'sk-sulit-pack-longganisa-siomai.png' },
+        { name: 'SK Sulit Pack Beef Siomai', pack: '40 pcs/pack', price: 184, image: 'sk-sulit-pack-beef-siomai.png' },
+        { name: 'SK Sulit Pack Japanese Siomai', pack: '40 pcs/pack', price: 220, image: 'sk-sulit-pack-japanese-siomai.png' }
       ],
       'SK Extras': [
-        { name: 'Chili Garlic Sauce Pack', pack: '20g/pack', price: 16.50 },
-        { name: 'SK Gulaman Powder Juice', pack: '1 pack', price: 175 }
+        { name: 'Chili Garlic Sauce Pack', pack: '20g/pack', price: 16.50, image: 'sk-chili-garlic-sauce-20g.png' },
+        { name: 'SK Gulaman Powder Juice', pack: '1 pack', price: 175, image: 'sk-black-gulaman-powder-juice.png' }
       ],
       'Sulit Pack Siopao': [
-        { name: 'SK Sulit Pack Bola-Bola Siopao w/ Sauce', pack: '10 pcs/pack (Frozen)', price: 180 },
-        { name: 'SK Sulit Pack Asado Siopao w/ Sauce', pack: '10 pcs/pack (Frozen)', price: 180 },
-        { name: 'SK Sulit Pack Spicy Bola Bola Siopao', pack: '10 pcs/pack (Frozen)', price: 185 },
-        { name: 'SK Sulit Pack Spicy Asado Siopao', pack: '10 pcs/pack (Frozen)', price: 185 },
-        { name: 'SK Sulit Pack Adobo Siopao w/ Sauce', pack: '10 pcs/pack (Frozen)', price: 225 }
+        { name: 'SK Sulit Pack Bola-Bola Siopao w/ Sauce', pack: '10 pcs/pack (Frozen)', price: 180, image: 'sk-sulit-pack-bola-bola-siopao.png' },
+        { name: 'SK Sulit Pack Asado Siopao w/ Sauce', pack: '10 pcs/pack (Frozen)', price: 180, image: 'siomai-king-adobo-siopao-sulit-pack.png' },
+        { name: 'SK Sulit Pack Spicy Bola Bola Siopao', pack: '10 pcs/pack (Frozen)', price: 185, image: 'sk-sulit-pack-spicy-bola-bola-siopao.png' },
+        { name: 'SK Sulit Pack Spicy Asado Siopao', pack: '10 pcs/pack (Frozen)', price: 185, image: 'sk-sulit-pack-spicy-asado-siopao.png' },
+        { name: 'SK Sulit Pack Adobo Siopao w/ Sauce', pack: '10 pcs/pack (Frozen)', price: 225, image: 'sk-sulit-pack-adobo-siopao.png' }
       ],
       'Mini Buns': [
-        { name: 'SK Sulit Pack Mini Buns Coffee', pack: '30 pcs/pack', price: 95 },
-        { name: 'SK Sulit Pack Mini Buns Choco', pack: '30 pcs/pack', price: 95 },
-        { name: 'SK Sulit Pack Mini Buns Ube', pack: '30 pcs/pack', price: 95 }
+        { name: 'SK Sulit Pack Mini Buns Coffee', pack: '30 pcs/pack', price: 95, image: 'sk-sulit-pack-mini-buns-coffee.png' },
+        { name: 'SK Sulit Pack Mini Buns Choco', pack: '30 pcs/pack', price: 95, image: 'sk-sulit-pack-mini-buns-choco.png' },
+        { name: 'SK Sulit Pack Mini Buns Ube', pack: '30 pcs/pack', price: 95, image: 'sk-sulit-pack-mini-buns-ube.png' }
       ],
       'Noodle House': [
-        { name: 'NH Pork Tray 20\'s w/ Chili Garlic', pack: '20 pcs/Tray (Frozen)', price: 195 },
-        { name: 'NH Beef Tray 20\'s w/ Chili Garlic', pack: '1 Tray (Frozen)', price: 195 },
-        { name: 'NH Pork Wonton Tray 20\'s', pack: '1 Tray (Frozen)', price: 220 },
-        { name: 'NH Dumpling Tray 20\'s', pack: '20 pcs/Tray (Frozen)', price: 220 },
-        { name: 'NH Egg Noodles Pack', pack: '1 Pack', price: 316 },
-        { name: 'NH Dumpling w/ Chili Garlic', pack: '25 pcs/pack (Frozen)', price: 320 },
-        { name: 'NH Pork Wonton w/ Chili Garlic', pack: '30 pcs/pack (Frozen)', price: 335 },
-        { name: 'NH Pork Siomai w/ Chili Garlic', pack: '35 pcs/pack (Frozen)', price: 340 },
-        { name: 'NH Beef Siomai w/ Chili Garlic', pack: '35 pcs/pack (Frozen)', price: 378 },
-        { name: 'NH Beef Teriyaki', pack: '1 pack (Frozen)', price: 398 }
+        { name: 'NH Pork Tray 20\'s w/ Chili Garlic', pack: '20 pcs/Tray (Frozen)', price: 195, image: 'nh-pork-siomai-tray.png' },
+        { name: 'NH Beef Tray 20\'s w/ Chili Garlic', pack: '1 Tray (Frozen)', price: 195, image: 'nh-beef-siomai-tray.png' },
+        { name: 'NH Pork Wonton Tray 20\'s', pack: '1 Tray (Frozen)', price: 220, image: 'nh-wanton-siomai-tray.png' },
+        { name: 'NH Dumpling Tray 20\'s', pack: '20 pcs/Tray (Frozen)', price: 220, image: 'nh-dumplings-chili-garlic-tray.png' },
+        { name: 'NH Beef Siomai w/ Chili Garlic', pack: '35 pcs/pack (Frozen)', price: 378, image: 'nh-beef-siomai-tray.png' },
+        { name: 'NH Egg Noodles Pack', pack: '1 Pack', price: 316, image: 'nh-egg-noodles-cup.png' },
+        { name: 'NH Dumpling w/ Chili Garlic', pack: '25 pcs/pack (Frozen)', price: 320, image: 'nh-dumpling-noodle-cup.png' },
+        { name: 'NH Pork Wonton w/ Chili Garlic', pack: '30 pcs/pack (Frozen)', price: 335, image: 'nh-wanton-noodle-cup.png' },
+        { name: 'NH Pork Siomai w/ Chili Garlic', pack: '35 pcs/pack (Frozen)', price: 340, image: 'nh-pork-siomai-noodle-cup.png' },
+        { name: 'NH Beef Teriyaki', pack: '1 pack (Frozen)', price: 398, image: 'nh-beef-noodle-cup.png' }
       ],
       'Noodle House Sauce': [
-        { name: 'NH Oyster Sauce Pack', pack: '100g/pack', price: 65 },
-        { name: 'NH Peanut Sauce Pack', pack: '100g/pack', price: 74 },
-        { name: 'NH Teriyaki Sauce Pack', pack: '100g/pack', price: 77 }
+        { name: 'NH Oyster Sauce Pack', pack: '100g/pack', price: 65, image: 'nh-oyster-sauce-100g.png' },
+        { name: 'NH Peanut Sauce Pack', pack: '100g/pack', price: 74, image: 'nh-peanut-sauce.png' },
+        { name: 'NH Teriyaki Sauce Pack', pack: '100g/pack', price: 77, image: 'nh-teriyaki-sauce-100g.png' }
       ],
       'Siopao Da King': [
-        { name: 'SPK Chicken Siopao w/ Sauce', pack: '6pcs/pack (Frozen)', price: 180 },
-        { name: 'SPK Combi Siopao w/ Sauce', pack: '6pcs/pack (Frozen)', price: 190 },
-        { name: 'SPK Asado Siopao w/ Sauce', pack: '6pcs/pack (Frozen)', price: 190 },
-        { name: 'SPK Bola Bola Siopao w/ Sauce', pack: '6pcs/pack (Frozen)', price: 190 },
-        { name: 'SPK Chili Asado Siopao w/ Sauce', pack: '6pcs/pack (Frozen)', price: 190 }
+        { name: 'SPK Chicken Siopao w/ Sauce', pack: '6pcs/pack (Frozen)', price: 180, image: 'spk-chicken-siopao.png' },
+        { name: 'SPK Combi Siopao w/ Sauce', pack: '6pcs/pack (Frozen)', price: 190, image: 'spk-combi-siopao.png' },
+        { name: 'SPK Asado Siopao w/ Sauce', pack: '6pcs/pack (Frozen)', price: 190, image: 'spk-asado-siopao.png' },
+        { name: 'SPK Bola Bola Siopao w/ Sauce', pack: '6pcs/pack (Frozen)', price: 190, image: 'spk-bola-bola-siopao.png' },
+        { name: 'SPK Chili Asado Siopao w/ Sauce', pack: '6pcs/pack (Frozen)', price: 190, image: 'spk-chili-asado-siopao.png' }
       ],
       'Boy Bondat': [
-        { name: 'Boy Bondat Regular Sisig', pack: '100g/pack (Frozen)', price: 160 },
-        { name: 'Boy Bondat Spicy Sisig', pack: '100g/pack (Frozen)', price: 160 },
-        { name: 'Boy Bondat Pares w/ Chili Sauce', pack: '140g/pack (Frozen)', price: 182 },
-        { name: 'Boy Bondat Goto Tray', pack: '1 Tray (Frozen)', price: 298 },
-        { name: 'Boy Bondat Chicken Afritada Tray', pack: '400g/Tray', price: 308 },
-        { name: 'Boy Bondat Pork Binagoongan Tray', pack: '300g/Tray', price: 348 },
-        { name: 'Boy Bondat Regular Sisig Family Tray', pack: '1 Tray (Frozen)', price: 358 },
-        { name: 'Boy Bondat Spicy Sisig Family Tray', pack: '1 Tray (Frozen)', price: 358 },
-        { name: 'Boy Bondat Beef Pares Family Tray', pack: '1 Tray (Frozen)', price: 362 },
-        { name: 'Boy Bondat Kare Kare Tray', pack: '1 Tray (Frozen)', price: 366 },
-        { name: 'Boy Bondat Beef Kaldereta', pack: '450g/Tray (Frozen)', price: 399 },
-        { name: 'Boy Bondat Pares Sauce', pack: '100g/pack (Frozen)', price: 45 }
+        { name: 'Boy Bondat Regular Sisig', pack: '100g/pack (Frozen)', price: 160, image: 'boy-bondat-pork-sisig-sizzling.png' },
+        { name: 'Boy Bondat Spicy Sisig', pack: '100g/pack (Frozen)', price: 160, image: 'boy-bondat-spicy-sisig-sizzling.png' },
+        { name: 'Boy Bondat Pares w/ Chili Sauce', pack: '140g/pack (Frozen)', price: 182, image: 'boy-bondat-beef-pares-garlic-rice.png' },
+        { name: 'Boy Bondat Goto Tray', pack: '1 Tray (Frozen)', price: 298, image: 'boy-bondat-goto-tray.png' },
+        { name: 'Boy Bondat Chicken Afritada Tray', pack: '400g/Tray', price: 308, image: 'boy-bondat-chicken-afritada-tray.png' },
+        { name: 'Boy Bondat Pork Binagoongan Tray', pack: '300g/Tray', price: 348, image: 'boy-bondat-pork-binagoongan-tray.png' },
+        { name: 'Boy Bondat Regular Sisig Family Tray', pack: '1 Tray (Frozen)', price: 358, image: 'boy-bondat-special-sisig-tray.png' },
+        { name: 'Boy Bondat Spicy Sisig Family Tray', pack: '1 Tray (Frozen)', price: 358, image: 'boy-bondat-spicy-sisig-tray.png' },
+        { name: 'Boy Bondat Beef Pares Family Tray', pack: '1 Tray (Frozen)', price: 362, image: 'boy-bondat-beef-pares-tray.png' },
+        { name: 'Boy Bondat Kare Kare Tray', pack: '1 Tray (Frozen)', price: 366, image: 'boy-bondat-kare-kare-tray.png' },
+        { name: 'Boy Bondat Beef Kaldereta', pack: '450g/Tray (Frozen)', price: 399, image: 'boy-bondat-beef-kaldereta-450g-tray.png' }
+        // { name: 'Boy Bondat Pares Sauce', pack: '100g/pack (Frozen)', price: 45 }
       ],
       'Burger Factory': [
-        { name: 'Burger Patty Pack', pack: '10pcs (Frozen)', price: 135 }
+        { name: 'Burger Patty Pack', pack: '10pcs (Frozen)', price: 135, image: 'burger-factory-mini-sliders.png' }
       ],
       'Potato King': [
-        { name: 'PK Cheese Powder Pack', pack: '60g/pack', price: 175 },
-        { name: 'PK BBQ Powder Pack', pack: '60g/pack', price: 175 },
-        { name: 'PK Sour Cream Powder Pack', pack: '60g/pack', price: 175 },
-        { name: 'Potato King Classic Fries Pack', pack: '1kg/pack (Frozen)', price: 275 }
+        { name: 'PK Cheese Powder Pack', pack: '60g/pack', price: 175, image: 'potato-king-cheese-fries-bag.png' },
+        { name: 'PK BBQ Powder Pack', pack: '60g/pack', price: 175, image: 'potato-king-seasoned-fries-bag.png' },
+        { name: 'PK Sour Cream Powder Pack', pack: '60g/pack', price: 175, image: 'potato-king-seasoned-fries-pack.png' },
+        { name: 'Potato King Classic Fries Pack', pack: '1kg/pack (Frozen)', price: 275, image: 'potato-king-classic-fries-1kg.png' }
       ]
     }
   },
@@ -152,72 +153,84 @@ const CATALOG: { [key: string]: CatalogCategory } = {
     label: 'Health & Wellness',
     franchises: {
       'JC Barley Coffee': [
-        { name: 'JC Barley Classic Coffee Tub', pack: 'Tub', price: 2180 },
-        { name: 'JC Barley Classic Coffee Box', pack: 'Box', price: 950 },
-        { name: 'JC Barley Classic Coffee Stick', pack: 'Stick', price: 95 },
-        { name: 'JC Barley Mocha Coffee Tub', pack: 'Tub', price: 2550 },
-        { name: 'JC Barley Mocha Coffee Box', pack: 'Box', price: 1050 },
-        { name: 'JC Barley Mocha Coffee Stick', pack: 'Stick', price: 95 },
-        { name: 'JC Barley Black Coffee Box', pack: 'Box', price: 628 },
-        { name: 'JC Barley Black Coffee Stick', pack: 'Stick', price: 62.8 }
+        { name: 'JC Classic Coffee Tub', pack: 'Tub', price: 2180, image: 'jc-barley-classic-coffee-tub.png' },
+        { name: 'JC Barley Coffee Classic Box', pack: 'Box', price: 950, image: 'jc-barley-coffee-classic-box.png' },
+        { name: 'JC Barley Coffee Classic Stick', pack: 'Stick', price: 95, image: 'jc-barley-coffee-classic-box.png' },
+        { name: 'JC Mocha Coffee Tub', pack: 'Tub', price: 2550, image: 'jc-mocha-coffee-tub.png' },
+        { name: 'JC Barley Coffee Mocha Box', pack: 'Box', price: 1050, image: 'jc-barley-coffee-mocha-box.png' },
+        { name: 'JC Barley Coffee Mocha Stick', pack: 'Stick', price: 95, image: 'jc-barley-coffee-mocha-box.png' },
+        { name: 'JC Black Coffee Tub', pack: 'Tub', price: 1050, image: 'jc-black-coffee-tub.png' },
+        { name: 'JC Barley Coffee Black Box', pack: 'Box', price: 628, image: 'jc-barley-coffee-black-box.png' },
+        { name: 'JC Barley Coffee Black Stick', pack: 'Stick', price: 62.8, image: 'jc-barley-coffee-black-box.png' }
       ],
       'JC Organic Matcha': [
-        { name: 'JC Organic Matcha Tub', pack: 'Tub', price: 6990 },
-        { name: 'JC Organic Matcha Box', pack: 'Box', price: 1200 },
-        { name: 'JC Organic Matcha Stick', pack: 'Stick', price: 120 }
+        { name: 'JC Organic Matcha Tub', pack: 'Tub', price: 6990, image: 'jc-organic-barley-tub.png' },
+        { name: 'JC Organic Matcha Box', pack: 'Box', price: 1200, image: 'jc-organic-barley-matcha-box.png' },
+        { name: 'JC Organic Matcha Stick', pack: 'Stick', price: 120, image: 'jc-organic-barley-matcha-box.png' }
       ],
       'Health Products': [
-        { name: 'JC Choco Barley Box', pack: 'Box', price: 989 },
-        { name: 'JC Choco Barley Stick', pack: 'Stick', price: 98.9 },
-        { name: 'JC Barley Milk Tea Box', pack: 'Box', price: 1050 },
-        { name: 'JC Barley Milk Tea Stick', pack: 'Stick', price: 105 },
-        { name: 'JC Barley Gold Box', pack: 'Box', price: 1200 },
-        { name: 'JC Barley Gold Stick', pack: 'Stick', price: 120 },
-        { name: 'JC Barley Brew Up Box', pack: 'Box', price: 1200 },
-        { name: 'JC Barley Brew Up Stick', pack: 'Stick', price: 120 },
-        { name: 'JC Barley Ginger Box', pack: 'Box', price: 1600 },
-        { name: 'JC Barley Ginger Stick', pack: 'Stick', price: 160 },
-        { name: 'JC Barley Coco Box', pack: 'Box', price: 1680 },
-        { name: 'JC Barley Coco Stick', pack: 'Stick', price: 168 },
-        { name: 'JC Barley Collagen Box', pack: 'Box', price: 1680 },
-        { name: 'JC Barley Collagen Stick', pack: 'Stick', price: 168 },
-        { name: 'JC Barley Capsule', pack: 'Bottle', price: 948 }
+        { name: 'JC Choco Barley Drink Mix Box', pack: 'Box', price: 989, image: 'jc-choco-barley-box.png' },
+        { name: 'JC Choco Barley Drink Mix Stick', pack: 'Stick', price: 98.9, image: 'jc-choco-barley-box.png' },
+        { name: 'JC Barley Milk Tea Box', pack: 'Box', price: 1050, image: 'jc-barley-milktea-box.png' },
+        { name: 'JC Barley Milk Tea Stick', pack: 'Stick', price: 105, image: 'jc-barley-milktea-box.png' },
+        { name: 'JC Organic Barley Gold Box', pack: 'Box', price: 1200, image: 'jc-organic-barley-gold-box.png' },
+        { name: 'JC Organic Barley Gold Stick', pack: 'Stick', price: 120, image: 'jc-organic-barley-gold-box.png' },
+        { name: 'JC Coffee Brew Up Box', pack: 'Box', price: 1200, image: 'jc-brew-up-barley-coffee-box.png' },
+        { name: 'JC Coffee Brew Up Stick', pack: 'Stick', price: 120, image: 'jc-brew-up-barley-coffee-box.png' },
+        { name: 'JC Ginger Barley Box', pack: 'Box', price: 1600, image: 'jc-ginger-barley-box.png' },
+        { name: 'JC Ginger Barley Stick', pack: 'Stick', price: 160, image: 'jc-ginger-barley-box.png' },
+        { name: 'JC Coco Barley Box', pack: 'Box', price: 1680, image: 'jc-coco-barley-box.png' },
+        { name: 'JC Coco Barley Stick', pack: 'Stick', price: 168, image: 'jc-coco-barley-box.png' },
+        { name: 'JC Collagen Barley Box', pack: 'Box', price: 1680, image: 'jc-collagen-barley-box.png' },
+        { name: 'JC Collagen Barley Stick', pack: 'Stick', price: 168, image: 'jc-collagen-barley-box.png' },
+        { name: 'JC Organic Barley Capsule', pack: 'Bottle', price: 948, image: 'jc-organic-barley-capsules.png' },
+        { name: 'JC OmniFit Capsules', pack: 'Bottle', price: 948, image: 'jc-omnifit-capsules.png' },
+        { name: 'JC 4Green Capsules', pack: 'Bottle', price: 948, image: 'jc-4green-capsules.png' },
+        { name: 'JC Calvit-C Capsules 500mg', pack: 'Bottle', price: 948, image: 'jc-calvit-c-capsules-500mg.png' }
       ],
       'Health Sets': [
         { name: 'Breakthrough Blue (6 Sachets)', pack: 'Set', price: 850 },
         { name: 'Miracle Purple (6 Sachets)', pack: 'Set', price: 951 },
-        { name: 'Hello Yellow (6 Sachets)', pack: 'Set', price: 622 }
+        { name: 'Hello Yellow (6 Sachets)', pack: 'Set', price: 622 },
+        { name: 'JC Organic Barley Limited Edition Set', pack: 'Set', price: 1500, image: 'jc-organic-barley-limited-edition-set.png' }
       ],
       'Health Programs': [
-        { name: 'Cell Detox Program', pack: '60-Day', price: 25876 },
-        { name: 'Immunity Booster Program', pack: '60-Day', price: 23584 },
-        { name: 'Weight Loss Program', pack: '60-Day', price: 25848 }
+        { name: '60-Day Cell Detox Program', pack: '60-Day', price: 25876, image: 'jc-60-day-cell-detox-program.png' },
+        { name: '60-Day Immunity Booster Program', pack: '60-Day', price: 23584, image: 'jc-60-day-immunity-booster-program.png' },
+        { name: '60-Day Weight Loss Program', pack: '60-Day', price: 25848, image: 'jc-60-day-weight-loss-program.png' }
       ],
       'Nature\'s Own': [
-        { name: 'Shampoo (240ML)', pack: 'Bottle', price: 890 },
-        { name: 'Conditioner (240ML)', pack: 'Bottle', price: 990 },
-        { name: 'Body Wash (240ML)', pack: 'Bottle', price: 1090 }
+        { name: 'JC Nature\'s Own Shampoo (240ML)', pack: 'Bottle', price: 890, image: 'jc-natures-own-shampoo-240ml.png' },
+        { name: 'JC Nature\'s Own Conditioner (240ML)', pack: 'Bottle', price: 990, image: 'jc-natures-own-conditioner-240ml.png' },
+        { name: 'JC Nature\'s Own Body Wash (240ML)', pack: 'Bottle', price: 1090, image: 'jc-natures-own-bodywash-240ml.png' }
       ],
       'Kind / White': [
-        { name: 'Omni White Soap', pack: 'Soap', price: 180 },
-        { name: 'Omni White Kojic Soap', pack: 'Soap', price: 180 },
-        { name: 'K-Pads Day (10pcs)', pack: 'Pack', price: 235 },
-        { name: 'K-Pads Night (8pcs)', pack: 'Pack', price: 225 },
-        { name: 'K-Pads Panty Liner (30pcs)', pack: 'Pack', price: 255 }
+        { name: 'OmniWhite Soap', pack: 'Soap', price: 180, image: 'jc-omni-white-soap.png' },
+        { name: 'OmniWhite Kojic Soap', pack: 'Soap', price: 180, image: 'jc-omni-white-kojic-soap.png' },
+        { name: 'K-Pads Day (10 Pads)', pack: 'Pack', price: 235, image: 'jc-kpads-day-10pcs.png' },
+        { name: 'K-Pads Night (8 Pads)', pack: 'Pack', price: 225, image: 'jc-kpads-night-8pcs.png' },
+        { name: 'K-Pads Pantyliner (30 Pads)', pack: 'Pack', price: 255, image: 'jc-kpads-panty-liner-30pcs.png' }
       ],
       'Kind Skincare': [
-        { name: 'JC Kind Hydrating Matte Sunstick', pack: 'Sunstick', price: 1150 },
-        { name: 'JC Kind Deep Hydrating Moisturizer', pack: '100ml', price: 1140 },
-        { name: 'JC Kind Hydrating Cleansing Foam', pack: '120ml', price: 880 },
-        { name: 'JC Kind Intensive Whitening Facial Cream', pack: '50ml', price: 1025 },
-        { name: 'JC Kind Intensive Whitening Facial Serum', pack: '30ml', price: 1035 },
-        { name: 'JC Kind Revitalizing Eye Cream', pack: '30ml', price: 885 },
-        { name: 'JC Kind Revitalizing Anti-Wrinkle Facial Cream', pack: '50ml', price: 1035 },
-        { name: 'JC Kind Revitalizing Toner', pack: '120ml', price: 1080 }
+        { name: 'JC Kind Hydrating Matte Sunstick', pack: 'Sunstick', price: 1150, image: 'jc-kind-hydrating-matte-sunstick.png' },
+        { name: 'JC Kind Deep Hydrating Moisturizer', pack: '100ml', price: 1140, image: 'jc-kind-deep-hydrating-moisturizer.png' },
+        { name: 'JC Kind Hydrating Cleansing Foam', pack: '120ml', price: 880, image: 'jc-kind-hydrating-cleansing-foam.png' },
+        { name: 'JC Kind Intensive Whitening Facial Cream', pack: '50ml', price: 1025, image: 'jc-kind-intensive-whitening-facial-cream.png' },
+        { name: 'JC Kind Intensive Whitening Facial Serum', pack: '30ml', price: 1035, image: 'jc-kind-intensive-whitening-facial-serum.png' },
+        { name: 'JC Kind Revitalizing Eye Cream', pack: '30ml', price: 885, image: 'jc-kind-revitalizing-eye-cream.png' },
+        { name: 'JC Kind Revitalizing Anti-Wrinkle Facial Cream', pack: '50ml', price: 1035, image: 'jc-kind-anti-wrinkle-facial-cream-50ml.png' },
+        { name: 'JC Kind Revitalizing Anti-Wrinkle Facial Serum', pack: '30ml', price: 1035, image: 'jc-kind-anti-wrinkle-facial-serum.png' },
+        { name: 'JC Kind Revitalizing Toner', pack: '120ml', price: 1080, image: 'jc-kind-revitalizing-toner.png' }
       ],
       'Kind Cosmetic': [
-        { name: 'JC Kind Browcara Black/Brown/Clear', pack: '3g', price: 1480 },
-        { name: 'JC Kind Paint - Blossom/Haven/Savvy/Sweet/Shy', pack: '10ml', price: 995 }
+        { name: 'JC Kind Browcara Black', pack: '3g', price: 1480, image: 'jc-kind-browcara-black.png' },
+        { name: 'JC Kind Browcara Brown', pack: '3g', price: 1480, image: 'jc-kind-browcara-brown.png' },
+        { name: 'JC Kind Browcara Clear', pack: '3g', price: 1480, image: 'jc-kind-browcara-clear.png' },
+        { name: 'JC Kind Paint - Blossom', pack: '10ml', price: 995, image: 'jc-kind-paint-blossom.png' },
+        { name: 'JC Kind Paint - Haven', pack: '10ml', price: 995, image: 'jc-kind-paint-haven.png' },
+        { name: 'JC Kind Paint - Savvy', pack: '10ml', price: 995, image: 'jc-kind-paint-savvy.png' },
+        { name: 'JC Kind Paint - Sweet', pack: '10ml', price: 995, image: 'jc-kind-paint-sweet.png' },
+        { name: 'JC Kind Paint - Shy', pack: '10ml', price: 995, image: 'jc-kind-paint-shy.png' }
       ]
     }
   }
@@ -234,9 +247,12 @@ const PAYMENT_METHODS = {
   GCash: { name: 'Yam Venturina', details: '0961 507 8790', color: '#007DFE', qr: gcashQr },
   BPI: { name: 'Yam Venturina', details: 'xxxxxxxxxxxx632', color: '#B30000', qr: bpiQr },
   MariBank: { name: 'Yam Inri Venturina', details: '****6997', color: '#FF5722', qr: mariQr },
-  Maya: { name: 'Yam Inri Venturina', details: '@yaminri03', color: '#000000', qr: mayaQr },
+  Maya: { name: 'Yam Venturina', details: '0961 507 8790', color: '#000000', qr: mayaQr },
   GoTyme: { name: 'Yam Inri Venturina', details: '7599', color: '#005AC6', qr: gotymeQr }
 };
+
+// --- Helper Functions ---
+const getKebabCaseName = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
 // --- Main App Component ---
 export default function App() {
@@ -244,6 +260,13 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFranchise, setSelectedFranchise] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     setSelectedFranchise(null);
@@ -280,41 +303,6 @@ export default function App() {
     deliveryOption: 'Luzon', // 'Luzon' / 'Visayas' / 'Mindanao' or 'Pickup'
     paymentMethod: 'GCash'
   });
-
-  useEffect(() => {
-    fetch('https://psgc.gitlab.io/api/provinces/')
-      .then(r => r.json())
-      .then(data => {
-        const withNCR = [
-          ...data,
-          { code: '130000000', name: 'Metro Manila', islandGroupCode: 'luzon' }
-        ].sort((a: any, b: any) => a.name.localeCompare(b.name));
-        setAllProvinces(withNCR);
-      })
-      .catch(console.error);
-  }, []);
-
-  useEffect(() => {
-    if (formData.address.region && allProvinces.length > 0) {
-      const regionFilter = formData.address.region.toLowerCase();
-      setProvinces(allProvinces.filter(p => p.islandGroupCode === regionFilter));
-    }
-  }, [formData.address.region, allProvinces]);
-
-  useEffect(() => {
-    if (formData.address.provinceCode) {
-      const url = formData.address.provinceCode === '130000000'
-        ? `https://psgc.gitlab.io/api/regions/130000000/cities-municipalities/`
-        : `https://psgc.gitlab.io/api/provinces/${formData.address.provinceCode}/cities-municipalities/`;
-        
-      fetch(url)
-        .then(r => r.json())
-        .then(data => setCities(data.sort((a: any, b: any) => a.name.localeCompare(b.name))))
-        .catch(console.error);
-    } else {
-      setCities([]);
-    }
-  }, [formData.address.provinceCode]);
 
   // Theme Config
   const theme = useMemo(() => {
@@ -477,7 +465,7 @@ export default function App() {
 
       {/* Header */}
       <header className={`sticky top-0 z-40 backdrop-blur-3xl border-b px-6 py-5 shadow-[0_4px_30px_rgba(0,0,0,0.03)] transition-colors ${isDarkMode ? 'bg-[#1C1C1E]/80 border-white/10' : 'bg-white/50 border-white/40'}`}>
-        <div className="max-w-md mx-auto space-y-4">
+        <div className="max-w-7xl mx-auto space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${theme.brand} shadow-lg shadow-black/5`}>
@@ -499,13 +487,13 @@ export default function App() {
               <div className={`flex p-1 rounded-xl transition-colors ${isDarkMode ? 'bg-white/10 border border-white/5' : 'glass-pill'}`}>
                 <button 
                   onClick={() => setActiveTab('food')}
-                  className={`px-5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'food' ? (isDarkMode ? 'bg-[#2C2C2E] text-red-500 shadow-sm' : 'bg-white text-red-600 shadow-sm') : (isDarkMode ? 'text-neutral-400' : 'text-neutral-400')}`}
+                  className={`px-5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'food' ? (isDarkMode ? 'bg-[#2C2C2E] text-red-500 shadow-sm' : 'bg-white text-red-600 shadow-sm') : (isDarkMode ? 'text-neutral-400 hover:bg-white/5' : 'text-neutral-400 hover:bg-black/5')}`}
                 >
                   Food
                 </button>
                 <button 
                   onClick={() => setActiveTab('health')}
-                  className={`px-5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'health' ? (isDarkMode ? 'bg-[#2C2C2E] text-emerald-400 shadow-sm' : 'bg-white text-emerald-600 shadow-sm') : (isDarkMode ? 'text-neutral-400' : 'text-neutral-400')}`}
+                  className={`px-5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'health' ? (isDarkMode ? 'bg-[#2C2C2E] text-emerald-400 shadow-sm' : 'bg-white text-emerald-600 shadow-sm') : (isDarkMode ? 'text-neutral-400 hover:bg-white/5' : 'text-neutral-400 hover:bg-black/5')}`}
                 >
                   Health & Wellness
                 </button>
@@ -553,7 +541,7 @@ export default function App() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-md mx-auto px-6 pt-10 pb-36 font-sans">
+      <main className="max-w-7xl mx-auto px-6 pt-10 pb-36 font-sans">
         {Object.entries(filteredCatalog).length === 0 ? (
           <div className="text-center py-20 opacity-30">
             <Search className="w-12 h-12 mx-auto mb-4" />
@@ -563,7 +551,7 @@ export default function App() {
           Object.entries(filteredCatalog).map(([franchise, items]: [string, Product[]]) => (
             <section key={franchise} className="mb-12">
               <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-400 mb-5 ml-1">{franchise}</h2>
-              <div className="grid grid-cols-1 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {items.map((item) => (
                   <motion.div 
                     layout
@@ -572,41 +560,63 @@ export default function App() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                    className="glass-card p-6 flex items-center gap-5 relative overflow-hidden group"
+                    className="glass-card p-3 sm:p-5 flex flex-row sm:flex-col gap-4 sm:gap-0 relative overflow-hidden group hover:-translate-y-1 hover:shadow-xl transition-all duration-300"
                   >
-                    <div className="flex-1 min-w-0">
-                      <div className="mb-2">
-                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border whitespace-nowrap ${theme.tag}`}>
-                          {franchise.split(' ')[0]}
-                        </span>
+                    {/* Image Placeholder */}
+                    <div className="w-24 h-24 sm:w-full sm:h-auto sm:aspect-square shrink-0 bg-black/5 dark:bg-white/5 rounded-[14px] sm:rounded-2xl sm:mb-4 flex flex-col items-center justify-center overflow-hidden relative group-hover:shadow-inner transition-all">
+                      <img 
+                        src={`/${item.image || getKebabCaseName(item.name) + '.png'}`} 
+                        alt={item.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                          if (fallback) {
+                            fallback.style.display = 'flex';
+                          }
+                        }}
+                      />
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/5 dark:bg-white/5" style={{ display: 'none' }}>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent dark:from-white/5" />
+                        <span className="text-neutral-400/50 dark:text-neutral-500/50 font-bold text-[8px] sm:text-xs uppercase tracking-widest mt-1 sm:mt-2 relative z-10">Image</span>
                       </div>
-                      <h3 className="font-bold text-sm leading-tight text-neutral-800 dark:text-neutral-100">{item.name}</h3>
-                      <p className="text-[11px] text-neutral-400 dark:text-neutral-500 font-semibold mt-1 uppercase tracking-tighter opacity-60 dark:opacity-80">{item.pack}</p>
                     </div>
 
-                    <div className="flex flex-col items-start justify-center pl-2 pr-4 min-w-[90px]">
-                      <div className={`font-mono font-black text-lg tabular-nums whitespace-nowrap flex items-center gap-1 ${theme.text}`}>
-                        <span className="text-[12px] opacity-40 font-sans font-semibold">₱</span>
-                        {item.price.toLocaleString(undefined, { minimumFractionDigits: 0 })}
-                      </div>
-                    </div>
-
-                    <div className="flex-shrink-0">
-                      {cart[item.name] ? (
-                        <div className="flex flex-col items-center gap-1.5 bg-neutral-100/50 dark:bg-white/5 p-1.5 rounded-2xl border border-white dark:border-white/10">
-                          <button onClick={() => updateQuantity(item.name, 1)} className={`w-8 h-8 rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-transform ${theme.brand}`}><Plus className="w-3.5 h-3.5 text-white" /></button>
-                          <span className="h-5 flex items-center font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">{cart[item.name].quantity}</span>
-                          <button onClick={() => updateQuantity(item.name, -1)} className="w-8 h-8 rounded-xl flex items-center justify-center bg-white dark:bg-[#2C2C2E] shadow-sm active:scale-90 transition-transform"><Minus className={`w-3.5 h-3.5 ${theme.text}`} /></button>
+                    <div className="flex-1 flex flex-col min-w-0 justify-between">
+                      <div>
+                        <div className="mb-1 sm:mb-2">
+                          <span className={`text-[8px] sm:text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border whitespace-nowrap ${theme.tag}`}>
+                            {franchise.split(' ')[0]}
+                          </span>
                         </div>
-                      ) : (
-                        <motion.button 
-                          whileTap={{ scale: 0.94 }}
-                          onClick={() => addToCart(item)}
-                          className={`w-12 h-12 rounded-[20px] flex items-center justify-center transition-all shadow-xl shadow-black/5 ${theme.brand} hover:brightness-110 border border-white/20`}
-                        >
-                          <Plus className="w-6 h-6 text-white" />
-                        </motion.button>
-                      )}
+                        <h3 className="font-bold text-sm leading-tight text-neutral-800 dark:text-neutral-100 line-clamp-2">{item.name}</h3>
+                        <p className="text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 font-semibold mt-0.5 uppercase tracking-tighter opacity-60 dark:opacity-80">{item.pack}</p>
+                      </div>
+
+                      <div className="flex items-center justify-between mt-3 sm:mt-4 sm:pt-4 sm:border-t border-black/5 dark:border-white/5">
+                        <div className={`font-mono font-black text-sm sm:text-lg tabular-nums whitespace-nowrap flex items-center gap-0.5 sm:gap-1 ${theme.text}`}>
+                          <span className="text-[10px] sm:text-[12px] opacity-40 font-sans font-semibold">₱</span>
+                          {item.price.toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                        </div>
+
+                        <div className="flex-shrink-0">
+                          {cart[item.name] ? (
+                            <div className="flex items-center gap-1 sm:gap-2 bg-neutral-100/50 dark:bg-white/5 p-1 rounded-[14px] sm:rounded-2xl border border-white dark:border-white/10">
+                              <button onClick={() => updateQuantity(item.name, -1)} className="w-7 h-7 sm:w-8 sm:h-8 rounded-[10px] sm:rounded-xl flex items-center justify-center bg-white dark:bg-[#2C2C2E] shadow-sm active:scale-90 transition-transform"><Minus className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${theme.text}`} /></button>
+                              <span className="w-5 sm:w-6 flex items-center justify-center font-mono font-bold text-[10px] sm:text-xs text-neutral-800 dark:text-neutral-200">{cart[item.name].quantity}</span>
+                              <button onClick={() => updateQuantity(item.name, 1)} className={`w-7 h-7 sm:w-8 sm:h-8 rounded-[10px] sm:rounded-xl flex items-center justify-center shadow-md active:scale-90 transition-transform ${theme.brand}`}><Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white" /></button>
+                            </div>
+                          ) : (
+                            <motion.button 
+                              whileTap={{ scale: 0.94 }}
+                              onClick={() => addToCart(item)}
+                              className={`px-3 sm:px-4 h-8 sm:h-10 rounded-[12px] sm:rounded-[16px] flex items-center justify-center gap-1 sm:gap-2 text-[10px] sm:text-xs font-bold transition-all shadow-lg shadow-black/5 ${theme.brand} text-white hover:brightness-110 border border-white/20`}
+                            >
+                              <Plus className="w-3 h-3 sm:w-4 sm:h-4" /> Add
+                            </motion.button>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </motion.div>
                 ))}
@@ -617,33 +627,36 @@ export default function App() {
       </main>
 
       {/* Floating Action Button */}
-              <AnimatePresence>
+      <AnimatePresence>
         {totalItems > 0 && !isCheckoutOpen && !isSuccess && (
           <motion.div 
             initial={{ y: 100, opacity: 0, scale: 0.9 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 100, opacity: 0, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-md px-6 z-50"
+            className="fixed bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 w-full max-w-md px-4 sm:px-6 z-50"
           >
             <motion.button 
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.96 }}
               onClick={() => setIsCheckoutOpen(true)}
-              className="w-full bg-[#111111]/80 backdrop-blur-3xl text-white rounded-[40px] p-5 shadow-[0_10px_40px_rgba(0,0,0,0.2)] flex items-center justify-between transition-all border border-white/20"
+              className="w-full bg-[#111111]/80 backdrop-blur-3xl text-white rounded-[32px] sm:rounded-[40px] p-3 sm:p-5 shadow-[0_10px_40px_rgba(0,0,0,0.2)] flex items-center justify-between transition-all border border-white/20 group"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/10">
-                  <ShoppingCart className="w-6 h-6 text-white" />
+              <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/10 rounded-[14px] sm:rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/10 shrink-0">
+                  <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <div className="text-left leading-tight">
-                  <p className="text-[11px] font-bold opacity-50 uppercase tracking-[0.2em] font-inter">Summary</p>
-                  <p className="text-2xl font-mono font-black mt-0.5">₱{total.toLocaleString()}</p>
+                <div className="text-left leading-tight min-w-0 pr-2">
+                  <p className="text-[9px] sm:text-[11px] font-bold opacity-50 uppercase tracking-[0.2em] font-inter">Summary</p>
+                  <p className="text-lg sm:text-2xl font-mono font-black mt-0.5 truncate">₱{total.toLocaleString()}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="text-[10px] font-bold uppercase tracking-widest bg-white/10 px-4 py-1.5 rounded-xl border border-white/5">{totalItems} Products</span>
-                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:translate-x-1 transition-transform"><ChevronRight className="w-5 h-5 opacity-40" /></div>
+              <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest bg-white/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-[10px] sm:rounded-xl border border-white/5 whitespace-nowrap">
+                  {totalItems} <span className="hidden sm:inline">Products</span>
+                  <span className="inline sm:hidden">Items</span>
+                </span>
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:translate-x-1 transition-transform shrink-0"><ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 opacity-40" /></div>
               </div>
             </motion.button>
           </motion.div>
@@ -653,20 +666,26 @@ export default function App() {
       {/* Checkout Sidebar/Modal */}
       <AnimatePresence>
         {isCheckoutOpen && (
-          <div className="fixed inset-0 z-50 flex flex-col items-center justify-end font-sans">
+          <div className={`fixed inset-0 z-50 flex font-sans ${isDesktop ? 'justify-end' : 'flex-col items-center justify-end'}`}>
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setIsCheckoutOpen(false)}
               className="absolute inset-0 bg-black/40 backdrop-blur-md px-4"
             />
             <motion.div 
-              initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+              initial={isDesktop ? { x: '100%' } : { y: '100%' }} 
+              animate={isDesktop ? { x: 0 } : { y: 0 }} 
+              exit={isDesktop ? { x: '100%' } : { y: '100%' }}
               transition={{ type: 'spring', damping: 32, stiffness: 250 }}
-              className="relative w-full max-w-md bg-[#1C1C1E]/80 backdrop-blur-3xl h-[92vh] rounded-t-[56px] overflow-hidden flex flex-col shadow-[0_-10px_40px_rgba(0,0,0,0.5)] border-t border-white/20 text-white"
+              className={`relative w-full overflow-hidden flex flex-col bg-[#1C1C1E]/80 backdrop-blur-3xl border-white/20 text-white ${
+                isDesktop 
+                  ? 'max-w-[480px] h-full shadow-[-10px_0_40px_rgba(0,0,0,0.5)] border-l' 
+                  : 'max-w-md h-[92vh] rounded-t-[56px] shadow-[0_-10px_40px_rgba(0,0,0,0.5)] border-t'
+              }`}
             >
-              <div className="w-16 h-1.5 bg-white/20 rounded-full mx-auto mt-4 mb-4" />
+              {!isDesktop && <div className="w-16 h-1.5 bg-white/20 rounded-full mx-auto mt-4 mb-4 shrink-0" />}
               
-              <div className="px-10 pb-4 flex items-center justify-between">
+              <div className={`px-10 pb-4 flex items-center justify-between shrink-0 ${isDesktop ? 'pt-8' : ''}`}>
                 <button onClick={() => setIsCheckoutOpen(false)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center active:scale-95 shadow-sm border border-white/10 hover:bg-white/20 transition-colors">
                   <ChevronLeft className="w-5 h-5 text-white" />
                 </button>
@@ -691,6 +710,9 @@ export default function App() {
                       <div className="space-y-6">
                         {cartValues.map(item => (
                           <div key={item.name} className="flex justify-between items-center group">
+                            <div className="w-12 h-12 bg-white/5 rounded-xl border border-white/5 mr-4 overflow-hidden shrink-0 hidden sm:flex items-center justify-center relative">
+                              <img src={`/${item.image || getKebabCaseName(item.name) + '.png'}`} alt={item.name} className="w-full h-full object-cover" onError={(e) => e.currentTarget.style.display = 'none'} />
+                            </div>
                             <div className="flex-1 pr-6">
                               <p className="font-extrabold text-sm text-white leading-tight mb-1">{item.name}</p>
                               <div className="flex items-center gap-2 font-mono tabular-nums">
@@ -804,7 +826,7 @@ export default function App() {
                                     <select 
                                       className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-[24px] py-4.5 pl-14 pr-6 text-sm font-bold focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 focus:outline-none text-white appearance-none"
                                       value={formData.address.region}
-                                      onChange={e => setFormData({ ...formData, address: { ...formData.address, region: e.target.value, provinceCode: '', province: '', cityCode: '', city: '' }, deliveryOption: e.target.value })}
+                                      onChange={e => setFormData({ ...formData, address: { ...formData.address, region: e.target.value }, deliveryOption: e.target.value })}
                                     >
                                       <option value="Luzon">Luzon</option>
                                       <option value="Visayas">Visayas</option>
@@ -812,28 +834,25 @@ export default function App() {
                                     </select>
                                   </div>
                                   <div className="relative group">
-                                    <select 
+                                    <input 
                                       required
-                                      className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-[24px] py-4.5 px-6 text-sm font-bold focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 focus:outline-none text-white appearance-none disabled:opacity-50"
-                                      value={formData.address.provinceCode}
-                                      onChange={e => setFormData({ ...formData, address: { ...formData.address, provinceCode: e.target.value, province: e.target.options[e.target.selectedIndex].text, cityCode: '', city: '' } })}
-                                    >
-                                      <option value="" disabled>Select Province</option>
-                                      {provinces.map(p => <option key={p.code} value={p.code}>{p.name}</option>)}
-                                    </select>
+                                      type="text"
+                                      placeholder="Province"
+                                      className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-[24px] py-4.5 px-6 text-sm font-bold focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 focus:outline-none text-white placeholder:text-white/30 transition-all shadow-inner"
+                                      value={formData.address.province}
+                                      onChange={e => setFormData({ ...formData, address: { ...formData.address, province: e.target.value } })}
+                                    />
                                   </div>
                                 </div>
                                 <div className="grid grid-cols-1 gap-4">
-                                  <select 
+                                  <input 
                                     required
-                                    className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-[24px] py-4.5 px-6 text-sm font-bold focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 focus:outline-none text-white appearance-none disabled:opacity-50"
-                                    value={formData.address.cityCode}
-                                    disabled={!formData.address.provinceCode}
-                                    onChange={e => setFormData({ ...formData, address: { ...formData.address, cityCode: e.target.value, city: e.target.options[e.target.selectedIndex].text } })}
-                                  >
-                                    <option value="" disabled>Select City / Municipality</option>
-                                    {cities.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
-                                  </select>
+                                    type="text"
+                                    placeholder="City / Municipality"
+                                    className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-[24px] py-4.5 px-6 text-sm font-bold focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 focus:outline-none text-white placeholder:text-white/30 transition-all shadow-inner"
+                                    value={formData.address.city}
+                                    onChange={e => setFormData({ ...formData, address: { ...formData.address, city: e.target.value } })}
+                                  />
                                 </div>
                                 <div className="grid grid-cols-[1fr_120px] gap-4">
                                   <input 
@@ -869,7 +888,7 @@ export default function App() {
                       </section>
 
                       <section>
-                        <h3 className="text-[10px] font-bold uppercase mb-6 text-white/40 tracking-[0.2em]">Payment Collection</h3>
+                        <h3 className="text-[10px] font-bold uppercase mb-6 text-white/40 tracking-[0.2em]">Payment Method</h3>
                         <div className="grid grid-cols-1 gap-4">
                           {Object.entries(PAYMENT_METHODS).map(([method, data]) => (
                             <div key={method} className="flex flex-col gap-4">
@@ -945,7 +964,7 @@ export default function App() {
 
                       <div className="bg-white/5 backdrop-blur-xl text-white p-8 rounded-[48px] shadow-xl border border-white/10 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-emerald-500/10 transition-all duration-700" />
-                        <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] mb-6 text-white/40">Procedure</h4>
+                        <h4 className="text-xs font-bold uppercase tracking-[0.3em] mb-6 text-red-500">Procedure</h4>
                         <ol className="space-y-6">
                           {[
                             "Transfer payment & Send Screenshot via Messenger/WhatsApp.",
@@ -989,9 +1008,12 @@ export default function App() {
                 <h3 className="text-[10px] font-bold uppercase text-white/40 mb-4 tracking-[0.2em] flex items-center gap-2"><ShoppingCart className="w-3 h-3" /> Order Summary</h3>
                 <div className="space-y-3 mb-6">
                   {cartValues.map(item => (
-                    <div key={item.name} className="flex justify-between items-center text-sm font-bold">
-                      <span className="text-white/80">{item.quantity}x {item.name}</span>
-                      <span className="font-mono text-emerald-400">₱{(item.price * item.quantity).toLocaleString()}</span>
+                    <div key={item.name} className="flex justify-between items-center text-sm font-bold gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/5 overflow-hidden shrink-0 flex items-center justify-center relative">
+                        <img src={`/${item.image || getKebabCaseName(item.name) + '.png'}`} alt={item.name} className="w-full h-full object-cover" onError={(e) => e.currentTarget.style.display = 'none'} />
+                      </div>
+                      <span className="text-white/80 flex-1 min-w-0 truncate">{item.quantity}x {item.name}</span>
+                      <span className="font-mono text-emerald-400 shrink-0">₱{(item.price * item.quantity).toLocaleString()}</span>
                     </div>
                   ))}
                 </div>
