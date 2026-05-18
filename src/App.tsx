@@ -245,10 +245,10 @@ const DELIVERY_FEES = {
 
 const PAYMENT_METHODS = {
   GCash: { name: 'Yam Venturina', details: '0961 507 8790', color: '#007DFE', qr: gcashQr },
-  BPI: { name: 'Yam Venturina', details: 'xxxxxxxxxxxx632', color: '#B30000', qr: bpiQr },
-  MariBank: { name: 'Yam Inri Venturina', details: '****6997', color: '#FF5722', qr: mariQr },
+  BPI: { name: 'Yam Venturina', details: '0616889632', color: '#B30000', qr: bpiQr },
+  MariBank: { name: 'Yam Inri Venturina', details: '1726-5006-997', color: '#FF5722', qr: mariQr },
   Maya: { name: 'Yam Venturina', details: '0961 507 8790', color: '#000000', qr: mayaQr },
-  GoTyme: { name: 'Yam Inri Venturina', details: '7599', color: '#005AC6', qr: gotymeQr }
+  GoTyme: { name: 'Yam Inri Venturina', details: '018862697599', color: '#005AC6', qr: gotymeQr }
 };
 
 // --- Helper Functions ---
@@ -888,7 +888,17 @@ export default function App() {
                       </section>
 
                       <section>
-                        <h3 className="text-[10px] font-bold uppercase mb-6 text-white/40 tracking-[0.2em]">Payment Method</h3>
+                        <div className="flex items-center gap-3 mb-6">
+                          <h3 className="text-[10px] font-bold uppercase text-white/40 tracking-[0.2em] mb-0">Payment Method</h3>
+                          <div className="group relative z-20 flex items-center justify-center">
+                            <AlertCircle className="w-4 h-4 text-emerald-400 cursor-help" />
+                            <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-3 w-64 bg-[#2C2C2E] border border-white/10 text-white text-[10px] font-bold p-5 rounded-3xl shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all scale-95 group-hover:scale-100 origin-bottom leading-relaxed z-50">
+                              <span className="block text-emerald-400 mb-2 text-xs">💡 Quick Tip</span>
+                              Select a payment method to view and scan our QR Codes for faster transactions. Don't forget to take a screenshot of your transfer!
+                              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 border-[8px] border-transparent border-t-[#2C2C2E]" />
+                            </div>
+                          </div>
+                        </div>
                         <div className="grid grid-cols-1 gap-4">
                           {Object.entries(PAYMENT_METHODS).map(([method, data]) => (
                             <div key={method} className="flex flex-col gap-4">
@@ -919,9 +929,12 @@ export default function App() {
                                       <div className="relative group">
                                         <div className="absolute -inset-4 bg-white/5 rounded-[48px] -z-10 group-hover:bg-white/10 transition-colors" />
                                           <div 
-                                            className="w-full aspect-square max-w-[200px] mx-auto bg-white rounded-3xl flex items-center justify-center border-4 border-white shadow-xl overflow-hidden relative cursor-zoom-in"
+                                            className="w-full aspect-square max-w-[200px] mx-auto bg-white rounded-3xl flex items-center justify-center border-4 border-white shadow-xl overflow-hidden relative cursor-zoom-in group/qr-image"
                                             onClick={() => setSelectedQR({ method, qr: (data as any).qr })}
                                           >
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/qr-image:opacity-100 transition-opacity flex items-center justify-center z-10 backdrop-blur-[2px]">
+                                              <span className="text-white text-[10px] font-bold uppercase tracking-widest bg-black/60 px-3 py-1.5 rounded-full border border-white/20">🔍 Enlarge</span>
+                                            </div>
                                              <img 
                                                src={(data as any).qr} 
                                                alt={`${method} QR Code`}
@@ -967,7 +980,7 @@ export default function App() {
                         <h4 className="text-xs font-bold uppercase tracking-[0.3em] mb-6 text-red-500">Procedure</h4>
                         <ol className="space-y-6">
                           {[
-                            "Transfer payment & Send Screenshot via Messenger/WhatsApp.",
+                            "Transfer payment & take a Screenshot.",
                             "Click the 'Submit Order' button below.",
                             "Copy the generated Order Summary text.",
                             "Send the text & screenshot to Yam via Messenger or WhatsApp."
@@ -1044,7 +1057,16 @@ export default function App() {
                   <Copy className="w-4 h-4" /> Copy Order Text
                 </button>
                 <div className="grid grid-cols-1 gap-3">
-                  <a href="https://www.facebook.com/profile.php?id=61582492107190" target="_blank" rel="noreferrer" className="w-full bg-[#1877F2]/10 hover:bg-[#1877F2]/20 border border-[#1877F2]/20 text-[#1877F2] py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 active:scale-[0.98] transition-all text-xs">
+                  <a 
+                    href="https://m.me/61582492107190" 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    onClick={() => {
+                      navigator.clipboard.writeText(generateOrderText());
+                      showToast('Order copied! Paste it in Messenger.');
+                    }}
+                    className="w-full bg-[#1877F2]/10 hover:bg-[#1877F2]/20 border border-[#1877F2]/20 text-[#1877F2] py-5 rounded-[24px] font-bold flex items-center justify-center gap-3 active:scale-[0.98] transition-all text-xs"
+                  >
                     <Facebook className="w-5 h-5" /> Message on Facebook
                   </a>
                   <a 
